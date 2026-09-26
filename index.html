@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Dark Ecko — Elemental Valley v0.4.1</title>
+<title>Dark Ecko — Elemental Valley v0.5</title>
 
 <style>
 *{box-sizing:border-box}
@@ -75,157 +75,168 @@ button,input,select{font:inherit}
   overflow:hidden;
   min-height:0;
   isolation:isolate;
-  background:#06101d;
+  background:#07101a;
 }
 
 .scene{
   position:absolute;
-  inset:0;
   pointer-events:none;
+  background-repeat:repeat-x;
+  will-change:background-position;
 }
 
+
+/* =========================================
+   FOREST RENDERER v0.5
+
+   Elemental Valley Art Style
+
+   Layer order:
+
+   Forest.Sky
+   Forest.Mountains
+   Forest.FarForest
+   Forest.NearForest
+   Forest.Ground
+   RACERS
+   Forest.Foreground
+========================================= */
+
+
+/* Forest.Sky */
+
 #sky{
+  inset:0;
   z-index:1;
-  background:
-    radial-gradient(circle at 72% 20%,
-      #31586c 0 2%,
-      #16384c 3% 8%,
-      transparent 18%),
-    linear-gradient(
-      #040a14 0%,
-      #071725 48%,
-      #0c2527 75%,
-      #102a23 100%);
+
+  background-color:#07101a;
+  background-image:url("assets/forest/sky.png");
+
+  background-repeat:repeat-x;
+  background-position:center top;
+  background-size:auto 100%;
 }
+
+
+/* Forest.Mountains */
 
 #mountains{
   z-index:2;
-  top:20%;
-  height:43%;
-  background-image:
-    repeating-linear-gradient(
-      150deg,
-      transparent 0 120px,
-      #102832 121px 220px,
-      transparent 221px 330px,
-      #153440 331px 470px,
-      transparent 471px 610px);
-  background-size:900px 100%;
-  background-repeat:repeat-x;
+
+  left:0;
+  right:0;
+  top:8%;
+  height:58%;
+
+  background-image:url("assets/forest/mountains.png");
+  background-position:0 bottom;
+  background-size:auto 100%;
+
+  opacity:.94;
 }
+
+
+/* Forest.FarForest */
 
 #farTrees{
   z-index:3;
-  top:34%;
-  height:31%;
-  background-image:
-    repeating-linear-gradient(
-      100deg,
-      transparent 0 45px,
-      #10342c 46px 62px,
-      transparent 63px 100px);
-  background-size:650px 100%;
-  background-repeat:repeat-x;
-  opacity:.85;
+
+  left:0;
+  right:0;
+  top:20%;
+  height:53%;
+
+  background-image:url("assets/forest/far-forest.png");
+  background-position:0 bottom;
+  background-size:auto 100%;
+
+  opacity:.95;
 }
+
+
+/* Forest.NearForest */
 
 #nearTrees{
   z-index:4;
-  top:28%;
-  height:40%;
-  background-image:
-    repeating-linear-gradient(
-      96deg,
-      transparent 0 90px,
-      #0b261e 91px 120px,
-      transparent 121px 180px);
-  background-size:720px 100%;
-  background-repeat:repeat-x;
+
+  left:0;
+  right:0;
+  top:16%;
+  height:62%;
+
+  background-image:url("assets/forest/near-forest.png");
+  background-position:0 bottom;
+  background-size:auto 100%;
 }
+
+
+/* =========================================
+   FOREST.GROUND
+
+   This remains the physical visual racing
+   surface. Racer logical coordinates are
+   NOT connected to image pixels.
+========================================= */
 
 #track{
   position:absolute;
+
   left:0;
   right:0;
+
   top:57%;
   height:35%;
+
   z-index:5;
+
   overflow:hidden;
 
-  background:
-    linear-gradient(
-      #294038 0 3%,
-      #1a2924 3% 88%,
-      #101815 88% 100%);
+  background-color:#17221c;
+  background-image:url("assets/forest/ground.png");
 
-  border-top:3px solid #46d8d8;
-  border-bottom:3px solid #17302d;
+  background-repeat:repeat-x;
+  background-position:0 center;
+  background-size:auto 100%;
 
-  box-shadow:inset 0 10px 30px #0005;
+  box-shadow:
+    inset 0 12px 25px #0005,
+    inset 0 -10px 25px #0005;
 }
+
+
+/*
+  These remain available as renderer hooks,
+  but the old synthetic track graphics are
+  intentionally disabled.
+*/
 
 #trackTexture{
   position:absolute;
   inset:0;
-
-  background-image:
-    repeating-linear-gradient(
-      90deg,
-      transparent 0 145px,
-      #ffffff0c 145px 148px,
-      transparent 148px 290px);
-
-  background-size:290px 100%;
-  background-repeat:repeat-x;
+  pointer-events:none;
 }
 
 #trackLines{
-  position:absolute;
-  left:0;
-  right:0;
-  top:50%;
-  height:2px;
-
-  background-image:
-    repeating-linear-gradient(
-      90deg,
-      #7ad8d2 0 42px,
-      transparent 42px 82px);
-
-  background-size:82px 2px;
-  background-repeat:repeat-x;
-  opacity:.25;
+  display:none;
 }
 
-#foreground{
-  position:absolute;
-  left:0;
-  right:0;
-  top:88%;
-  height:15%;
-  z-index:30;
-  pointer-events:none;
 
-  background-image:
-    repeating-linear-gradient(
-      105deg,
-      transparent 0 65px,
-      #071813 66px 91px,
-      transparent 92px 145px);
-
-  background-size:430px 100%;
-  background-repeat:repeat-x;
-}
+/* =========================================
+   RACERS
+========================================= */
 
 #racers{
   position:absolute;
   inset:0;
+
   z-index:20;
+
   pointer-events:none;
 }
 
 .racer{
   position:absolute;
+
   left:0;
   top:0;
 
@@ -239,13 +250,15 @@ button,input,select{font:inherit}
       circle at 35% 30%,
       #e7fdff 0 8%,
       #58e8ff 9% 35%,
-      #18374d 36% 100%);
+      #18374d 36% 100%
+    );
 
   box-shadow:
     0 4px 10px #0009,
     0 0 10px #39ddff55;
 
   transform-origin:center;
+
   will-change:transform;
 }
 
@@ -259,7 +272,9 @@ button,input,select{font:inherit}
   place-items:center;
 
   font-size:calc(var(--size,28px)*.36);
+
   font-weight:900;
+
   color:#031018;
 }
 
@@ -273,6 +288,7 @@ button,input,select{font:inherit}
 
 .racer.winner{
   outline:3px solid white;
+
   filter:brightness(1.3);
 
   box-shadow:
@@ -280,10 +296,46 @@ button,input,select{font:inherit}
     0 0 45px #39ddff88;
 }
 
+
+/* =========================================
+   FOREST.FOREGROUND
+
+   Closest environmental layer.
+   Fastest parallax.
+========================================= */
+
+#foreground{
+  position:absolute;
+
+  left:0;
+  right:0;
+
+  bottom:-1%;
+  height:24%;
+
+  z-index:30;
+
+  pointer-events:none;
+
+  background-image:url("assets/forest/foreground.png");
+
+  background-repeat:repeat-x;
+  background-position:0 bottom;
+  background-size:auto 100%;
+
+  will-change:background-position;
+}
+
+
+/* =========================================
+   FINISH SYSTEM
+========================================= */
+
 #finish{
   position:absolute;
 
   top:54%;
+
   height:41%;
   width:6px;
 
@@ -296,6 +348,7 @@ button,input,select{font:inherit}
     0 0 30px #44e8ff88;
 
   pointer-events:none;
+
   opacity:0;
 
   will-change:transform,opacity;
@@ -305,10 +358,12 @@ button,input,select{font:inherit}
   content:"FINISH";
 
   position:absolute;
+
   top:-27px;
   left:-38px;
 
   width:82px;
+
   text-align:center;
 
   font-size:10px;
@@ -316,13 +371,16 @@ button,input,select{font:inherit}
   letter-spacing:.14em;
 
   color:#bffaff;
-  text-shadow:0 0 8px #26d9ff;
+
+  text-shadow:
+    0 0 8px #26d9ff;
 }
 
 #finish:after{
   content:"";
 
   position:absolute;
+
   top:0;
   left:-8px;
 
@@ -330,33 +388,51 @@ button,input,select{font:inherit}
   height:4px;
 
   background:#eaffff;
-  box-shadow:0 0 10px #26d9ff;
+
+  box-shadow:
+    0 0 10px #26d9ff;
 }
+
+
+/* =========================================
+   RACE HUD
+========================================= */
 
 .title{
   position:absolute;
+
   left:4%;
   top:6%;
+
   z-index:40;
 
   font-size:clamp(18px,4vw,46px);
+
   font-weight:900;
   letter-spacing:.08em;
 
   color:#7ff5ff;
-  text-shadow:0 0 18px #26d9ff66;
+
+  text-shadow:
+    0 0 18px #26d9ff66;
 
   pointer-events:none;
 }
 
 .subtitle{
   position:absolute;
+
   left:4%;
   top:15%;
+
   z-index:40;
 
-  color:#7c9aa7;
+  color:#9eb2bd;
+
   font-size:11px;
+
+  text-shadow:
+    0 2px 5px #000;
 
   pointer-events:none;
 }
@@ -366,47 +442,66 @@ button,input,select{font:inherit}
 
   left:4%;
   right:4%;
+
   bottom:3%;
 
   height:5px;
+
   z-index:40;
 
   background:#071117;
+
   border:1px solid #1d4553;
 
   border-radius:10px;
+
   overflow:hidden;
 }
 
 #progress{
   height:100%;
+
   width:0%;
 
   background:
     linear-gradient(
       90deg,
       #36bfdc,
-      #b45cff);
+      #b45cff
+    );
 }
+
+
+/* =========================================
+   DEBUG HUD
+========================================= */
 
 #debug{
   padding:7px 12px;
 
   background:#080c14;
-  border-top:1px solid #183849;
+
+  border-top:
+    1px solid #183849;
 
   color:#809ba8;
 
-  font:11px ui-monospace,monospace;
+  font:
+    11px ui-monospace,
+    monospace;
 
   display:flex;
+
   gap:16px;
 
   white-space:nowrap;
+
   overflow:auto;
 }
 
-.pass{color:#7fffb2}
+.pass{
+  color:#7fffb2;
+}
 
 @media(max-width:650px){
 
@@ -415,18 +510,29 @@ button,input,select{font:inherit}
     padding:7px 8px;
   }
 
-  .brand{width:100%}
+  .brand{
+    width:100%;
+  }
 
-  .stat{margin-left:0}
+  .stat{
+    margin-left:0;
+  }
 
-  .subtitle{display:none}
+  .subtitle{
+    display:none;
+  }
 
-  #debug{font-size:10px}
+  #debug{
+    font-size:10px;
+  }
 
-  .title{top:3%}
+  .title{
+    top:3%;
+  }
 }
 </style>
 </head>
+
 
 <body>
 
@@ -440,6 +546,7 @@ button,input,select{font:inherit}
 
     <label>
       Racers
+
       <input
         id="count"
         type="number"
@@ -451,6 +558,7 @@ button,input,select{font:inherit}
 
     <label>
       Duration
+
       <select id="duration">
         <option value="5">5s</option>
         <option value="10" selected>10s</option>
@@ -459,8 +567,13 @@ button,input,select{font:inherit}
       </select>
     </label>
 
-    <button id="start">Start</button>
-    <button id="reset">Reset</button>
+    <button id="start">
+      Start
+    </button>
+
+    <button id="reset">
+      Reset
+    </button>
 
     <div id="stat" class="stat">
       READY
@@ -471,32 +584,68 @@ button,input,select{font:inherit}
 
   <div id="viewport">
 
-    <div id="sky" class="scene"></div>
-    <div id="mountains" class="scene"></div>
-    <div id="farTrees" class="scene"></div>
-    <div id="nearTrees" class="scene"></div>
-
-    <div id="track">
-      <div id="trackTexture"></div>
-      <div id="trackLines"></div>
+    <!-- Forest.Sky -->
+    <div
+      id="sky"
+      class="scene">
     </div>
 
-    <div id="racers"></div>
+    <!-- Forest.Mountains -->
+    <div
+      id="mountains"
+      class="scene">
+    </div>
 
-    <div id="finish"></div>
+    <!-- Forest.FarForest -->
+    <div
+      id="farTrees"
+      class="scene">
+    </div>
 
-    <div id="foreground"></div>
+    <!-- Forest.NearForest -->
+    <div
+      id="nearTrees"
+      class="scene">
+    </div>
+
+    <!-- Forest.Ground -->
+    <div id="track">
+
+      <div id="trackTexture">
+      </div>
+
+      <div id="trackLines">
+      </div>
+
+    </div>
+
+    <!-- Racer Pack -->
+    <div id="racers">
+    </div>
+
+    <!-- Finish System -->
+    <div id="finish">
+    </div>
+
+    <!-- Forest.Foreground -->
+    <div id="foreground">
+    </div>
+
 
     <div class="title">
       FOREST RUN
     </div>
 
     <div class="subtitle">
-      v0.4.1 — adaptive pack dynamics
+      v0.5 — Elemental Valley Forest Renderer
     </div>
 
+
     <div id="progressWrap">
-      <div id="progress"></div>
+
+      <div id="progress">
+      </div>
+
     </div>
 
   </div>
@@ -542,18 +691,23 @@ button,input,select{font:inherit}
 const $ =
   s => document.querySelector(s);
 
+
 const viewport =
   $('#viewport');
 
+
 const racersEl =
   $('#racers');
+
 
 const finishEl =
   $('#finish');
 
 
 /* =========================================
-   LOGICAL RACE
+   RACE PROGRESS
+
+   UNCHANGED FROM v0.4.1
 ========================================= */
 
 const WORLD = 9000;
@@ -584,11 +738,13 @@ function clamp(v,a,b){
 
 }
 
+
 function lerp(a,b,t){
 
   return a+(b-a)*t;
 
 }
+
 
 function smoothstep(t){
 
@@ -597,6 +753,7 @@ function smoothstep(t){
   return t*t*(3-2*t);
 
 }
+
 
 function smootherstep(t){
 
@@ -611,9 +768,12 @@ function smootherstep(t){
 
 
 /* =========================================
+   RACE RESULT
+   PROTECTED
+
    SECURE RNG
 
-   SAME CORE AS v0.4
+   UNCHANGED FROM v0.4.1
 ========================================= */
 
 function secureInt(max){
@@ -625,18 +785,24 @@ function secureInt(max){
     throw Error('bad max');
   }
 
+
   const lim =
     Math.floor(
       0x100000000/max
     )*max;
 
+
   const a =
     new Uint32Array(1);
 
+
   do{
+
     crypto.getRandomValues(a);
+
   }
   while(a[0]>=lim);
+
 
   return a[0]%max;
 
@@ -644,9 +810,12 @@ function secureInt(max){
 
 
 /* =========================================
+   RACE RESULT
+   PROTECTED
+
    FISHER-YATES
 
-   SAME CORE AS v0.4
+   UNCHANGED FROM v0.4.1
 ========================================= */
 
 function shuffle(n){
@@ -657,6 +826,7 @@ function shuffle(n){
       (_,i)=>i
     );
 
+
   for(
     let i=n-1;
     i>0;
@@ -666,10 +836,12 @@ function shuffle(n){
     const j =
       secureInt(i+1);
 
+
     [a[i],a[j]] =
       [a[j],a[i]];
 
   }
+
 
   return a;
 
@@ -677,7 +849,7 @@ function shuffle(n){
 
 
 /* =========================================
-   RACER PRESENTATION
+   RACER IDENTITY / PRESENTATION
 ========================================= */
 
 function racerSize(n){
@@ -697,8 +869,10 @@ function makeRacers(n){
 
   racersEl.innerHTML='';
 
+
   const size =
     racerSize(n);
+
 
   for(
     let i=0;
@@ -709,14 +883,17 @@ function makeRacers(n){
     const el =
       document.createElement('div');
 
+
     el.className='racer';
 
     el.dataset.n=i+1;
+
 
     el.style.setProperty(
       '--size',
       size+'px'
     );
+
 
     racersEl.appendChild(el);
 
@@ -726,7 +903,7 @@ function makeRacers(n){
 
 
 /* =========================================
-   DEPTH
+   TRACK DEPTH
 ========================================= */
 
 function trackBounds(
@@ -737,14 +914,17 @@ function trackBounds(
   const top =
     height*.57;
 
+
   const bottom =
     height*.92;
+
 
   const padding =
     Math.max(
       8,
       size*.6
     );
+
 
   return{
     top:top+padding,
@@ -768,6 +948,7 @@ function depthFor(
       size
     );
 
+
   if(n===1){
 
     return(
@@ -777,11 +958,14 @@ function depthFor(
 
   }
 
+
   const slots =
     Math.min(n,14);
 
+
   const slot =
     i%slots;
+
 
   const base =
     bounds.top+
@@ -797,18 +981,22 @@ function depthFor(
       )
     );
 
+
   const row =
     Math.floor(
       i/slots
     );
+
 
   const stagger =
     row%2
       ? 3
       : -3;
 
+
   const jitter =
     (seed-.5)*5;
+
 
   return clamp(
     base+
@@ -823,18 +1011,9 @@ function depthFor(
 
 
 /* =========================================
-   RACE DYNAMICS v0.4.1
+   RACE DRAMA + RESULT REVEAL
 
-   IMPORTANT:
-
-   The locked rank contributes essentially
-   nothing during the normal race.
-
-   Racers battle using independent wave
-   motion.
-
-   The final result begins asserting itself
-   only very late.
+   UNCHANGED FROM v0.4.1
 ========================================= */
 
 function logicalPosition(
@@ -845,27 +1024,18 @@ function logicalPosition(
   const n =
     state.n;
 
+
   const rank =
     state.rank[i];
+
 
   const s =
     state.motion[i];
 
 
-  /*
-    Main forward movement.
-  */
-
   const base =
     smoothstep(t);
 
-
-  /*
-    Mid-race activity envelope.
-
-    Strong in the middle.
-    Zero at start and finish.
-  */
 
   const activity =
     Math.pow(
@@ -873,14 +1043,6 @@ function logicalPosition(
       .82
     );
 
-
-  /*
-    Every racer receives several different
-    frequencies and phases.
-
-    This makes lead changes less synchronized
-    than the old two-wave system.
-  */
 
   const waveA =
     Math.sin(
@@ -903,14 +1065,6 @@ function logicalPosition(
     )*s.ampC;
 
 
-  /*
-    Slow "form" component.
-
-    A racer can have a good or bad portion
-    of the race without it determining the
-    actual result.
-  */
-
   const form =
     Math.sin(
       Math.PI*
@@ -932,18 +1086,6 @@ function logicalPosition(
     activity;
 
 
-  /*
-    RESULT REVEAL
-
-    No rank influence until 91%.
-
-    91–97%:
-    begin converging toward the locked order.
-
-    97–100%:
-    rapidly resolve exact finish.
-  */
-
   let resultBias=0;
 
 
@@ -962,11 +1104,6 @@ function logicalPosition(
           rank/(n-1);
 
 
-    /*
-      Winner gets positive final offset.
-      Last place gets negative final offset.
-    */
-
     const targetOffset =
       (
         rankNorm-.5
@@ -983,11 +1120,6 @@ function logicalPosition(
 
   }
 
-
-  /*
-    As the locked result appears,
-    random race drama fades away.
-  */
 
   let dramaFade=1;
 
@@ -1020,10 +1152,6 @@ function logicalPosition(
     );
 
 
-  /*
-    Exact locked final spatial order.
-  */
-
   if(t>=1){
 
     const gap =
@@ -1050,7 +1178,8 @@ function logicalPosition(
 
 
 /* =========================================
-   PACK REFERENCE
+   PACK ANCHOR
+   UNCHANGED
 ========================================= */
 
 function packReference(xs){
@@ -1089,13 +1218,8 @@ function packReference(xs){
 
 
 /* =========================================
-   ADAPTIVE PACK SCALE
-
-   This is the important 1–50 racer change.
-
-   We calculate the logical spread and
-   choose a visual scale that keeps the
-   pack readable inside the viewport.
+   PACK COMPRESSION / PACK SPREAD
+   UNCHANGED
 ========================================= */
 
 function packScale(
@@ -1111,8 +1235,10 @@ function packScale(
   const min =
     Math.min(...xs);
 
+
   const max =
     Math.max(...xs);
+
 
   const spread =
     Math.max(
@@ -1120,12 +1246,6 @@ function packScale(
       max-min
     );
 
-
-  /*
-    Maximum width occupied by the pack.
-
-    Large fields get slightly more room.
-  */
 
   let allowed =
     width*.58;
@@ -1135,18 +1255,9 @@ function packScale(
     allowed=width*.64;
 
 
-  /*
-    Scale needed to fit current spread.
-  */
-
   const fit =
     allowed/spread;
 
-
-  /*
-    Never make normal movement microscopic
-    or absurdly exaggerated.
-  */
 
   let scale =
     clamp(
@@ -1155,11 +1266,6 @@ function packScale(
       1.85
     );
 
-
-  /*
-    During final approach we intentionally
-    expand separation slightly.
-  */
 
   if(t>.91){
 
@@ -1188,7 +1294,8 @@ function packScale(
 
 
 /* =========================================
-   SCREEN POSITION
+   PACK ANCHOR / SCREEN POSITION
+   UNCHANGED
 ========================================= */
 
 function packScreenX(
@@ -1214,55 +1321,107 @@ function packScreenX(
 
 
 /* =========================================
-   ENVIRONMENT
+   WORLD MOTION + PARALLAX
+   v0.5 FOREST RENDERER
+
+   THIS IS THE PRIMARY v0.5 CHANGE.
+
+   Logical race:
+       0 → 9000
+
+   Visual world:
+       recycled background imagery
+
+   No environment movement affects
+   Race Result or Race Progress.
 ========================================= */
 
 function renderEnvironment(
   logicalProgress
 ){
 
+  /*
+    Convert logical race progress into
+    visual environmental travel.
+  */
+
   const travel =
     logicalProgress*7200;
 
 
+  /*
+    Forest.Sky
+
+    Almost stationary.
+    Tiny drift prevents it from feeling
+    pasted to the viewport.
+  */
+
+  $('#sky')
+    .style.backgroundPositionX =
+    `${-travel*.015}px`;
+
+
+  /*
+    Forest.Mountains
+
+    Very distant.
+  */
+
   $('#mountains')
     .style.backgroundPositionX =
-    `${-travel*.10}px`;
+    `${-travel*.08}px`;
 
+
+  /*
+    Forest.FarForest
+
+    Distant tree line.
+  */
 
   $('#farTrees')
     .style.backgroundPositionX =
-    `${-travel*.25}px`;
+    `${-travel*.20}px`;
 
+
+  /*
+    Forest.NearForest
+
+    Large trunks / vines behind racers.
+  */
 
   $('#nearTrees')
     .style.backgroundPositionX =
-    `${-travel*.52}px`;
+    `${-travel*.43}px`;
 
 
-  $('#trackTexture')
+  /*
+    Forest.Ground
+
+    Main apparent running speed.
+  */
+
+  $('#track')
     .style.backgroundPositionX =
-    `${-travel*.95}px`;
+    `${-travel*.92}px`;
 
 
-  $('#trackLines')
-    .style.backgroundPositionX =
-    `${-travel*1.05}px`;
+  /*
+    Forest.Foreground
 
+    Closest objects move fastest.
+  */
 
   $('#foreground')
     .style.backgroundPositionX =
-    `${-travel*1.35}px`;
+    `${-travel*1.25}px`;
 
 }
 
 
 /* =========================================
-   FINISH
-
-   Later than v0.4.
-
-   Finish becomes visible at 91%.
+   FINISH APPROACH
+   UNCHANGED FROM v0.4.1
 ========================================= */
 
 function renderFinish(
@@ -1277,12 +1436,14 @@ function renderFinish(
 
     finishEl.style.opacity=0;
 
+
     finishEl.style.transform =
       `translate3d(
         ${width+100}px,
         0,
         0
       )`;
+
 
     return null;
 
@@ -1295,12 +1456,6 @@ function renderFinish(
       (1-start)
     );
 
-
-  /*
-    Starts beyond the right edge.
-
-    Ends around 76% viewport width.
-  */
 
   const startX =
     width+90;
@@ -1477,8 +1632,8 @@ function reset(){
 /* =========================================
    START
 
-   COMPLETE RESULT IS LOCKED HERE,
-   BEFORE requestAnimationFrame STARTS.
+   RACE RESULT IS LOCKED BEFORE
+   ANIMATION BEGINS.
 ========================================= */
 
 function start(){
@@ -1505,9 +1660,10 @@ function start(){
   makeRacers(n);
 
 
-  /*
-    LOCKED RESULT
-  */
+  /* =====================================
+     RACE RESULT
+     PROTECTED
+  ===================================== */
 
   const order =
     shuffle(n);
@@ -1519,16 +1675,17 @@ function start(){
 
   order.forEach(
     (id,index)=>{
+
       rank[id]=index;
+
     }
   );
 
 
   /*
-    Presentation-only motion parameters.
+    Presentation-only parameters.
 
-    They are random, but they DO NOT change
-    the already locked finishing order.
+    These cannot alter the locked result.
   */
 
   const motion =
@@ -1658,9 +1815,7 @@ function frame(now){
     racerSize(state.n);
 
 
-  /*
-    Calculate logical racer positions.
-  */
+  /* Race Progress */
 
   for(
     let i=0;
@@ -1673,6 +1828,8 @@ function frame(now){
 
   }
 
+
+  /* Pack Anchor */
 
   const reference =
     packReference(
@@ -1692,10 +1849,7 @@ function frame(now){
     );
 
 
-  /*
-    Determine visual pack scale from
-    current logical spread.
-  */
+  /* Pack Compression */
 
   const visualPackScale =
     packScale(
@@ -1705,10 +1859,14 @@ function frame(now){
     );
 
 
+  /* World Renderer */
+
   renderEnvironment(
     logicalProgress
   );
 
+
+  /* Finish Approach */
 
   const finishScreenX =
     renderFinish(
@@ -1747,21 +1905,10 @@ function frame(now){
           );
 
 
-        /*
-          FINISH TRANSITION
-
-          Until 91%:
-          pure pack renderer.
-
-          91–96%:
-          finish arrives but pack behavior
-          remains dominant.
-
-          96–100%:
-          racers become increasingly tied
-          to their real distance from the
-          finish line.
-        */
+        /* =================================
+           FINISH TRANSITION
+           UNCHANGED
+        ================================= */
 
         if(
           t>.96 &&
@@ -1794,14 +1941,6 @@ function frame(now){
         }
 
 
-        /*
-          Safety margin during normal pack
-          mode.
-
-          This affects ONLY rendering.
-          Never logical position.
-        */
-
         if(t<.96){
 
           const margin =
@@ -1820,6 +1959,8 @@ function frame(now){
 
         }
 
+
+        /* Track Depth */
 
         const y =
           depthFor(
@@ -1848,6 +1989,8 @@ function frame(now){
             bounds.top
           );
 
+
+        /* Depth Scale */
 
         const visualDepthScale =
           .82+
@@ -1908,9 +2051,7 @@ function frame(now){
     );
 
 
-  /*
-    Highlight current leader during race.
-  */
+  /* Racer Identity / leader state */
 
   [...racersEl.children]
     .forEach(
@@ -1932,6 +2073,8 @@ function frame(now){
       }
     );
 
+
+  /* Race HUD */
 
   $('#progress')
     .style.width =
@@ -1977,9 +2120,7 @@ function frame(now){
         : 'mode=FINISH';
 
 
-  /*
-    FPS
-  */
+  /* Debug HUD — FPS */
 
   state.frames++;
 
@@ -2039,7 +2180,6 @@ function frame(now){
   }
 
   else{
-
 
     const winner =
       state.rank.indexOf(0)+1;

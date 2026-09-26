@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Dark Ecko — Elemental Valley v0.5.1</title>
+<title>Dark Ecko — Elemental Valley v0.5.2</title>
 
 <style>
 *{box-sizing:border-box}
@@ -91,7 +91,7 @@ button,input,select{font:inherit}
 
    Elemental Valley Art Style
 
-   v0.5.1 scope:
+   v0.5.2 scope:
    Forest.NearForest only.
 
    Race systems remain unchanged.
@@ -167,23 +167,48 @@ button,input,select{font:inherit}
   left:0;
   right:0;
 
-  top:20%;
-  height:52%;
+  /* Raised and extended so the layer fills
+     more of the forest composition. */
+  top:12%;
+  height:66%;
 
   background-image:url("assets/forest/near-forest.png");
 
   background-position:0 bottom;
 
-  /* Smaller than v0.5 = wider visual tile */
-  background-size:auto 82%;
+  /* Slightly larger than v0.5.1 while still
+     avoiding the original oversized-tree look. */
+  background-size:auto 92%;
 
   background-repeat:repeat-x;
 
-  opacity:.86;
+  opacity:.84;
 
   filter:
     brightness(.82)
     saturate(.90);
+
+  /* Blend the bottom of NearForest into the
+     race area instead of ending on a flat line. */
+  -webkit-mask-image:
+    linear-gradient(
+      to bottom,
+      rgba(0,0,0,1) 0%,
+      rgba(0,0,0,1) 72%,
+      rgba(0,0,0,.85) 82%,
+      rgba(0,0,0,.45) 92%,
+      rgba(0,0,0,0) 100%
+    );
+
+  mask-image:
+    linear-gradient(
+      to bottom,
+      rgba(0,0,0,1) 0%,
+      rgba(0,0,0,1) 72%,
+      rgba(0,0,0,.85) 82%,
+      rgba(0,0,0,.45) 92%,
+      rgba(0,0,0,0) 100%
+    );
 }
 
 
@@ -553,7 +578,7 @@ button,input,select{font:inherit}
     </div>
 
     <div class="subtitle">
-      v0.5.1 — NearForest tuning
+      v0.5.2 — NearForest height + blend
     </div>
 
     <div id="progressWrap">

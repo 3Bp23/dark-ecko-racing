@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dark Ecko — Elemental Valley v0.2</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Dark Ecko — Elemental Valley v0.3</title>
 
 <style>
 *{box-sizing:border-box}
@@ -17,6 +17,8 @@ html,body{
   overflow:hidden
 }
 
+button,input,select{font:inherit}
+
 #app{
   height:100%;
   display:grid;
@@ -25,19 +27,20 @@ html,body{
 
 .bar{
   display:flex;
-  gap:12px;
+  gap:10px;
   align-items:center;
-  padding:10px 14px;
+  padding:9px 12px;
   background:#080c14;
   border-bottom:1px solid #183849;
-  z-index:20;
+  z-index:30;
   flex-wrap:wrap
 }
 
 .brand{
-  font-weight:800;
-  letter-spacing:.12em;
-  color:#62e8ff
+  font-weight:850;
+  letter-spacing:.1em;
+  color:#62e8ff;
+  font-size:clamp(12px,2.6vw,16px)
 }
 
 .bar label{
@@ -60,39 +63,37 @@ html,body{
   border-color:#2fb8d5
 }
 
-.bar button:hover{
-  background:#142839
-}
-
 .stat{
   margin-left:auto;
   font-variant-numeric:tabular-nums;
-  color:#8defff
+  color:#8defff;
+  font-weight:700
 }
 
 #viewport{
   position:relative;
   overflow:hidden;
   isolation:isolate;
-  background:linear-gradient(#071321 0 55%,#0c1612 55%)
+  min-height:0;
+  background:linear-gradient(#06101d 0 55%,#0c1612 55%)
 }
 
 .layer{
   position:absolute;
   inset:0;
-  will-change:transform;
-  pointer-events:none
+  pointer-events:none;
+  will-change:transform
 }
 
 .sky{
   background:
-    radial-gradient(circle at 72% 24%,#123e5c 0 3%,transparent 16%),
+    radial-gradient(circle at 72% 24%,#164965 0 3%,transparent 17%),
     linear-gradient(#06101d,#0b2631 68%,#16312b)
 }
 
 .mountains{
+  top:17%;
   height:48%;
-  top:19%;
   background:
     linear-gradient(
       150deg,
@@ -108,8 +109,8 @@ html,body{
 }
 
 .farTrees{
-  top:37%;
-  height:28%;
+  top:35%;
+  height:31%;
   background:
     repeating-linear-gradient(
       100deg,
@@ -117,8 +118,7 @@ html,body{
       #10352d 49px 63px,
       transparent 64px 100px
     );
-  filter:blur(.4px);
-  opacity:.8
+  opacity:.82
 }
 
 .nearTrees{
@@ -134,25 +134,36 @@ html,body{
   opacity:.95
 }
 
-.track{
-  top:63%;
-  height:27%;
-  background:
-    linear-gradient(
-      #23342f 0 4%,
-      #17201e 4% 92%,
-      #0c1110 92%
-    );
-  border-top:3px solid #46d8d8;
-  border-bottom:2px solid #162a29
+#course{
+  position:absolute;
+  inset:0;
+  z-index:5;
+  pointer-events:none
 }
 
-.track:after{
+.track{
+  position:absolute;
+  left:0;
+  top:57%;
+  height:35%;
+  width:100%;
+  background:
+    linear-gradient(
+      #2a4039 0 3%,
+      #1b2925 3% 88%,
+      #101815 88% 100%
+    );
+  border-top:3px solid #46d8d8;
+  border-bottom:3px solid #17302d;
+  box-shadow:inset 0 10px 30px #0004
+}
+
+.track:before{
   content:"";
   position:absolute;
   left:0;
   right:0;
-  top:52%;
+  top:50%;
   height:2px;
   background:
     repeating-linear-gradient(
@@ -160,12 +171,52 @@ html,body{
       #7ad8d2 0 44px,
       transparent 44px 82px
     );
-  opacity:.35
+  opacity:.22
 }
 
+.rail{
+  position:absolute;
+  left:0;
+  right:0;
+  height:2px;
+  background:#74e6e044;
+  box-shadow:0 0 8px #46d8d844
+}
+
+.rail.top{top:10%}
+.rail.bottom{bottom:10%}
+
+.gate{
+  position:absolute;
+  top:50%;
+  height:44%;
+  width:5px;
+  background:#7ff5ff;
+  box-shadow:0 0 14px #26d9ff;
+  transform:translateY(-8%)
+}
+
+.gate.start{left:125px}
+.gate.finish{left:calc(100% - 155px)}
+
+.gate:after{
+  position:absolute;
+  top:-24px;
+  left:-32px;
+  width:70px;
+  text-align:center;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.12em;
+  color:#b8fbff
+}
+
+.gate.start:after{content:"START"}
+.gate.finish:after{content:"FINISH"}
+
 .foreground{
-  top:86%;
-  height:20%;
+  top:89%;
+  height:16%;
   background:
     repeating-linear-gradient(
       105deg,
@@ -173,56 +224,57 @@ html,body{
       #0a1c17 76px 98px,
       transparent 99px 145px
     );
-  z-index:12
+  z-index:20
 }
 
-.landmark{
+.title{
   position:absolute;
-  top:12%;
-  font-size:clamp(28px,4vw,64px);
+  left:4%;
+  top:6%;
+  z-index:15;
+  font-size:clamp(18px,4vw,46px);
   font-weight:900;
   letter-spacing:.08em;
   color:#7ff5ff;
-  text-shadow:0 0 18px #26d9ff88;
-  white-space:nowrap;
-  z-index:3
-}
-
-.start{
-  left:7%
+  text-shadow:0 0 18px #26d9ff66
 }
 
 .hint{
   position:absolute;
-  right:4%;
-  top:8%;
+  right:3%;
+  top:6%;
+  z-index:15;
   color:#7c9aa7;
-  font-size:12px;
-  z-index:15
+  font-size:11px;
+  text-align:right
 }
 
 #racers{
   position:absolute;
   inset:0;
-  z-index:10
+  z-index:12;
+  pointer-events:none
 }
 
 .racer{
   position:absolute;
-  width:28px;
-  height:28px;
+  left:0;
+  top:0;
+  width:var(--size,28px);
+  height:var(--size,28px);
   border-radius:50% 50% 45% 45%;
   background:
     radial-gradient(
       circle at 35% 30%,
-      #d7fbff 0 8%,
+      #e7fdff 0 8%,
       #58e8ff 9% 35%,
       #18374d 36% 100%
     );
   box-shadow:
-    0 4px 12px #0008,
-    0 0 12px #39ddff66;
-  will-change:transform
+    0 4px 10px #0009,
+    0 0 10px #39ddff55;
+  will-change:transform;
+  transform-origin:center
 }
 
 .racer:after{
@@ -231,7 +283,7 @@ html,body{
   inset:0;
   display:grid;
   place-items:center;
-  font-size:10px;
+  font-size:calc(var(--size,28px)*.36);
   font-weight:900;
   color:#031018
 }
@@ -241,19 +293,32 @@ html,body{
   box-shadow:0 0 18px #fff9
 }
 
+.racer.winner{
+  outline:3px solid #fff;
+  filter:brightness(1.25)
+}
+
 #debug{
-  padding:7px 14px;
+  padding:7px 12px;
   background:#080c14;
   border-top:1px solid #183849;
   color:#809ba8;
-  font:12px ui-monospace,monospace;
+  font:11px ui-monospace,monospace;
   display:flex;
-  gap:20px;
-  white-space:nowrap
+  gap:16px;
+  white-space:nowrap;
+  overflow:auto
 }
 
-.pass{
-  color:#7fffb2
+.pass{color:#7fffb2}
+
+@media(max-width:650px){
+  .bar{gap:7px;padding:7px 8px}
+  .brand{width:100%}
+  .stat{margin-left:0}
+  .hint{display:none}
+  #debug{font-size:10px}
+  .title{top:3%}
 }
 </style>
 </head>
@@ -273,7 +338,7 @@ html,body{
       min="1"
       max="50"
       value="12"
-      style="width:62px">
+      style="width:60px">
   </label>
 
   <label>
@@ -311,24 +376,32 @@ html,body{
     data-depth=".55">
   </div>
 
-  <div
-    class="layer track"
-    data-depth="1">
+  <div id="course">
+    <div class="track">
+
+      <div class="rail top"></div>
+      <div class="rail bottom"></div>
+
+      <div class="gate start"></div>
+      <div class="gate finish"></div>
+
+    </div>
   </div>
 
-  <div class="landmark start">
-    FOREST GATE
+  <div class="title">
+    FOREST RUN
+  </div>
+
+  <div class="hint">
+    v0.3 — pack camera + bounded track<br>
+    result locked before animation
   </div>
 
   <div id="racers"></div>
 
   <div
     class="layer foreground"
-    data-depth="1.28">
-  </div>
-
-  <div class="hint">
-    v0.2 camera + depth prototype
+    data-depth="1.25">
   </div>
 
 </div>
@@ -336,9 +409,10 @@ html,body{
 <div id="debug">
   <span id="clock">t=0.000</span>
   <span id="camera">camera=0</span>
+  <span id="spread">spread=0</span>
   <span id="fps">fps=—</span>
   <span class="pass">
-    RNG result locked before animation
+    CSPRNG → locked order → animation
   </span>
 </div>
 
@@ -346,218 +420,263 @@ html,body{
 
 <script>
 
-const $ = s => document.querySelector(s);
+const $ = s =>
+  document.querySelector(s);
 
-const racersEl = $('#racers');
-const viewport = $('#viewport');
+const racersEl =
+  $('#racers');
+
+const viewport =
+  $('#viewport');
 
 const WORLD = 9000;
 
+const START_X = 160;
+
+const FINISH_X =
+  WORLD - 220;
+
 let raf = 0;
+
 let state = null;
 
 
-/* --------------------------------
-   CRYPTOGRAPHIC RANDOM INTEGER
--------------------------------- */
+/* ----------------------------
+   HELPERS
+---------------------------- */
 
-function secureInt(max){
+function clamp(v,a,b){
 
-  if(max <= 0 || max > 0x100000000)
-    throw Error('bad max');
+  return Math.max(
+    a,
+    Math.min(b,v)
+  );
 
-  const limit =
-    Math.floor(0x100000000 / max) * max;
+}
 
-  const a = new Uint32Array(1);
+function smoothstep(t){
 
-  do{
-    crypto.getRandomValues(a);
-  }
-  while(a[0] >= limit);
+  return t*t*(3-2*t);
 
-  return a[0] % max;
 }
 
 
-/* --------------------------------
-   FISHER-YATES SHUFFLE
--------------------------------- */
+/* ----------------------------
+   CRYPTOGRAPHIC RNG
+---------------------------- */
+
+function secureInt(max){
+
+  if(
+    max <= 0 ||
+    max > 0x100000000
+  )
+    throw Error('bad max');
+
+  const lim =
+    Math.floor(
+      0x100000000 / max
+    ) * max;
+
+  const a =
+    new Uint32Array(1);
+
+  do{
+
+    crypto.getRandomValues(a);
+
+  }
+  while(a[0] >= lim);
+
+  return a[0] % max;
+
+}
+
+
+/* ----------------------------
+   FISHER-YATES
+---------------------------- */
 
 function shuffle(n){
 
   const a =
-    Array.from({length:n},(_,i)=>i);
+    Array.from(
+      {length:n},
+      (_,i)=>i
+    );
 
-  for(let i=n-1;i>0;i--){
+  for(
+    let i=n-1;
+    i>0;
+    i--
+  ){
 
-    const j = secureInt(i+1);
+    const j =
+      secureInt(i+1);
 
     [a[i],a[j]] =
-    [a[j],a[i]];
+      [a[j],a[i]];
 
   }
 
   return a;
+
 }
 
 
-/* --------------------------------
-   RACER CREATION
--------------------------------- */
+/* ----------------------------
+   RACER DISPLAY
+---------------------------- */
+
+function racerSize(n){
+
+  return n<=8
+    ? 32
+    : n<=16
+      ? 28
+      : n<=30
+        ? 23
+        : 19;
+
+}
+
 
 function makeRacers(n){
 
   racersEl.innerHTML='';
 
-  for(let i=0;i<n;i++){
+  const size =
+    racerSize(n);
+
+  for(
+    let i=0;
+    i<n;
+    i++
+  ){
 
     const e =
-      document.createElement('div');
+      document.createElement(
+        'div'
+      );
 
     e.className='racer';
+
     e.dataset.n=i+1;
+
+    e.style.setProperty(
+      '--size',
+      size+'px'
+    );
 
     racersEl.appendChild(e);
 
   }
+
 }
 
 
-/* --------------------------------
-   RESET
--------------------------------- */
+/* ----------------------------
+   TRACK DEPTH
+---------------------------- */
 
-function reset(){
+function trackBounds(
+  h,
+  size
+){
 
-  cancelAnimationFrame(raf);
+  const top =
+    h*.57;
 
-  state=null;
+  const bottom =
+    h*.92;
 
-  makeRacers(+$('#count').value);
-
-  document
-    .querySelectorAll('.layer[data-depth]')
-    .forEach(x=>{
-      x.style.transform =
-        'translate3d(0,0,0)';
-    });
-
-  [...racersEl.children]
-    .forEach((r,i)=>{
-
-      r.style.transform =
-        `translate3d(
-          ${80+(i%5)*6}px,
-          ${viewport.clientHeight*.66+
-          (i%10)*Math.min(
-            14,
-            viewport.clientHeight*.19/10
-          )}px,
-          0
-        )`;
-
-    });
-
-  $('#stat').textContent='READY';
-  $('#clock').textContent='t=0.000';
-  $('#camera').textContent='camera=0';
-}
-
-
-/* --------------------------------
-   START RACE
--------------------------------- */
-
-function start(){
-
-  cancelAnimationFrame(raf);
-
-  const n =
+  const pad =
     Math.max(
-      1,
-      Math.min(
-        50,
-        +$('#count').value || 1
+      8,
+      size*.55
+    );
+
+  return{
+    top:top+pad,
+    bottom:bottom-pad
+  };
+
+}
+
+
+function depthFor(
+  i,
+  n,
+  seed,
+  h,
+  size
+){
+
+  const b =
+    trackBounds(
+      h,
+      size
+    );
+
+  if(n===1)
+    return(
+      b.top+b.bottom
+    )/2;
+
+  const slots =
+    Math.min(
+      n,
+      14
+    );
+
+  const slot =
+    i%slots;
+
+  const base =
+    b.top +
+    (
+      b.bottom-b.top
+    ) *
+    (
+      slot /
+      Math.max(
+        1,
+        slots-1
       )
     );
 
-  const duration =
-    +$('#duration').value * 1000;
-
-  makeRacers(n);
-
-  /*
-     IMPORTANT:
-
-     The entire finishing order is
-     determined BEFORE animation.
-  */
-
-  const order = shuffle(n);
-
-  const rank = Array(n);
-
-  order.forEach(
-    (id,i)=>rank[id]=i
-  );
-
-  const seeds =
-    Array.from(
-      {length:n},
-      ()=>secureInt(100000)/100000
+  const jitter =
+    (seed-.5) *
+    Math.min(
+      10,
+      (
+        b.bottom-b.top
+      ) /
+      slots *
+      .5
     );
 
-  state={
-    n,
-    duration,
-    start:performance.now(),
-    rank,
-    seeds,
-    last:performance.now(),
-    frames:0
-  };
+  return clamp(
+    base+jitter,
+    b.top,
+    b.bottom
+  );
 
-  $('#stat').textContent='RACING';
-
-  raf=requestAnimationFrame(frame);
 }
 
 
-/* --------------------------------
-   ANIMATION
--------------------------------- */
+/* ----------------------------
+   PARALLAX
+---------------------------- */
 
-function frame(now){
-
-  if(!state)
-    return;
-
-  const t =
-    Math.min(
-      1,
-      (now-state.start) /
-      state.duration
-    );
-
-  const ease =
-    t*t*(3-2*t);
-
-  const w =
-    viewport.clientWidth;
-
-  const h =
-    viewport.clientHeight;
-
-  const cameraX =
-    ease *
-    (WORLD-w*.72);
-
-
-  /* PARALLAX */
+function setLayers(
+  cameraX
+){
 
   document
-    .querySelectorAll('.layer[data-depth]')
+    .querySelectorAll(
+      '.layer[data-depth]'
+    )
     .forEach(el=>{
 
       const d =
@@ -572,153 +691,684 @@ function frame(now){
 
     });
 
-
-  let lead=-1;
-  let leadX=-1;
+}
 
 
-  /* RACERS */
+/* ----------------------------
+   RESET
+---------------------------- */
+
+function reset(){
+
+  cancelAnimationFrame(
+    raf
+  );
+
+  state=null;
+
+  const n =
+    clamp(
+      +$('#count').value || 1,
+      1,
+      50
+    );
+
+  $('#count').value=n;
+
+  makeRacers(n);
+
+  setLayers(0);
+
+  const h =
+    viewport.clientHeight;
+
+  const size =
+    racerSize(n);
 
   [...racersEl.children]
-    .forEach((el,i)=>{
+    .forEach(
+      (el,i)=>{
 
-      const r =
-        state.rank[i];
+        const y =
+          depthFor(
+            i,
+            n,
+            .5,
+            h,
+            size
+          );
 
-      const s =
-        state.seeds[i];
+        const x =
+          72 +
+          (i%5)*4;
 
-      const finishBias =
-        (state.n-r) /
-        state.n *
-        115;
-
-      /*
-         Visual drama only.
-
-         It fades near the finish
-         and cannot change the
-         predetermined result.
-      */
-
-      const drama =
-        (
-          Math.sin(t*18+s*20)*22 +
-          Math.sin(t*41+s*9)*9
-        )
-        *
-        (1-Math.pow(t,5));
-
-      const worldX =
-        110 +
-        ease*(WORLD-420) +
-        finishBias*t*t +
-        drama;
-
-      const x =
-        worldX-cameraX;
-
-      const rows =
-        Math.min(state.n,12);
-
-      const row =
-        i%rows;
-
-      const y =
-        h*.65 +
-        row *
-        Math.max(
-          8,
-          Math.min(
-            18,
-            h*.20/rows
-          )
+        el.classList.remove(
+          'leader',
+          'winner'
         );
 
-      const scale =
-        .78 +
-        (
-          row /
-          Math.max(1,rows-1)
-        )*.38;
+        el.style.transform =
+          `translate3d(
+            ${x}px,
+            ${y-size/2}px,
+            0
+          )
+          scale(1)`;
 
-      el.style.transform =
-        `translate3d(
-          ${x}px,
-          ${y}px,
-          0
-        )
-        scale(${scale})`;
-
-      el.style.zIndex =
-        100+row;
-
-      if(worldX>leadX){
-
-        leadX=worldX;
-        lead=i;
+        el.style.zIndex =
+          100 +
+          Math.round(y);
 
       }
+    );
 
-    });
+  $('#stat')
+    .textContent='READY';
+
+  $('#clock')
+    .textContent='t=0.000';
+
+  $('#camera')
+    .textContent='camera=0';
+
+  $('#spread')
+    .textContent='spread=0';
+
+}
+
+
+/* ----------------------------
+   START
+---------------------------- */
+
+function start(){
+
+  cancelAnimationFrame(
+    raf
+  );
+
+  const n =
+    clamp(
+      +$('#count').value || 1,
+      1,
+      50
+    );
+
+  const duration =
+    +$('#duration').value *
+    1000;
+
+  $('#count').value=n;
+
+  makeRacers(n);
+
+
+  /*
+     COMPLETE FINISH ORDER
+     IS LOCKED HERE,
+     BEFORE ANIMATION.
+  */
+
+  const order =
+    shuffle(n);
+
+  const rank =
+    Array(n);
+
+  order.forEach(
+    (id,i)=>
+      rank[id]=i
+  );
+
+
+  /*
+     Seeds affect visual
+     movement only.
+  */
+
+  const seeds =
+    Array.from(
+      {length:n},
+      ()=>
+        secureInt(1000000) /
+        1000000
+    );
+
+
+  state={
+    n,
+    duration,
+    start:
+      performance.now(),
+    rank,
+    seeds,
+    lastFps:
+      performance.now(),
+    frames:0,
+    cameraX:0,
+    positions:
+      new Array(n)
+        .fill(START_X)
+  };
+
+  $('#stat')
+    .textContent='RACING';
+
+  raf =
+    requestAnimationFrame(
+      frame
+    );
+
+}
+
+
+/* ----------------------------
+   RACER WORLD POSITION
+---------------------------- */
+
+function racePosition(
+  i,
+  t
+){
+
+  const {
+    n,
+    rank,
+    seeds
+  } = state;
+
+  const r =
+    rank[i];
+
+  const s =
+    seeds[i];
+
+  const base =
+    smoothstep(t);
+
+
+  /*
+     Mid-race surges create
+     lead changes.
+
+     This disappears as the
+     finish approaches.
+  */
+
+  const phase1 =
+    Math.sin(
+      t*(13+s*4) +
+      s*20
+    ) * 85;
+
+  const phase2 =
+    Math.sin(
+      t*(31+s*8) +
+      s*11
+    ) * 34;
+
+  const earlyPersonality =
+    (
+      phase1 +
+      phase2
+    ) *
+    Math.pow(
+      Math.sin(
+        Math.PI*t
+      ),
+      1.25
+    );
+
+
+  /*
+     Locked RNG rank takes
+     control near finish.
+  */
+
+  const rankNorm =
+    n===1
+      ? 1
+      : 1 -
+        r/(n-1);
+
+  const finishSeparation =
+    (
+      rankNorm-.5
+    ) *
+    Math.min(
+      260,
+      90+n*4
+    ) *
+    Math.pow(
+      t,
+      6
+    );
+
+
+  let x =
+    START_X +
+    (
+      FINISH_X -
+      START_X
+    ) *
+    base +
+    earlyPersonality +
+    finishSeparation;
+
+
+  /*
+     At t=1, resolve exact
+     predetermined order.
+  */
+
+  if(t>=1){
+
+    x =
+      FINISH_X +
+      (
+        n-1-r
+      ) *
+      Math.min(
+        9,
+        150 /
+        Math.max(
+          1,
+          n
+        )
+      );
+
+  }
+
+  return x;
+
+}
+
+
+/* ----------------------------
+   PACK CAMERA
+---------------------------- */
+
+function desiredCamera(
+  xs,
+  w,
+  t
+){
+
+  const sorted =
+    [...xs]
+      .sort(
+        (a,b)=>a-b
+      );
+
+  const median =
+    sorted[
+      Math.floor(
+        sorted.length/2
+      )
+    ];
+
+  const p70 =
+    sorted[
+      Math.floor(
+        (
+          sorted.length-1
+        )*.70
+      )
+    ];
+
+  const leader =
+    sorted[
+      sorted.length-1
+    ];
+
+
+  /*
+     Follow the body of
+     the pack initially.
+  */
+
+  let focus =
+    median*.58 +
+    p70*.42;
+
+
+  /*
+     Near finish,
+     camera shifts toward
+     contenders/leader.
+  */
+
+  if(t>.82){
+
+    const k =
+      smoothstep(
+        (t-.82)/.18
+      );
+
+    focus =
+      focus*(1-k) +
+      leader*k;
+
+  }
+
+
+  /*
+     Screen position changes
+     from start to finish.
+  */
+
+  const screenTarget =
+    t<.08
+      ? w*.34
+      : t>.9
+        ? w*.68
+        : w*.48;
+
+
+  return clamp(
+    focus-screenTarget,
+    0,
+    WORLD-w
+  );
+
+}
+
+
+/* ----------------------------
+   FRAME
+---------------------------- */
+
+function frame(now){
+
+  if(!state)
+    return;
+
+
+  const t =
+    clamp(
+      (
+        now-state.start
+      ) /
+      state.duration,
+      0,
+      1
+    );
+
+
+  const w =
+    viewport.clientWidth;
+
+  const h =
+    viewport.clientHeight;
+
+  const size =
+    racerSize(
+      state.n
+    );
+
+  const xs =
+    state.positions;
+
+
+  /*
+     Calculate every racer
+     in world coordinates.
+  */
+
+  for(
+    let i=0;
+    i<state.n;
+    i++
+  ){
+
+    xs[i] =
+      racePosition(
+        i,
+        t
+      );
+
+  }
+
+
+  /*
+     Camera follows pack,
+     not elapsed time.
+  */
+
+  const target =
+    desiredCamera(
+      xs,
+      w,
+      t
+    );
+
+  const follow =
+    t<.02
+      ? 1
+      : .12;
+
+  state.cameraX +=
+    (
+      target -
+      state.cameraX
+    ) *
+    follow;
+
+  if(t===1)
+    state.cameraX =
+      target;
+
+
+  setLayers(
+    state.cameraX
+  );
+
+
+  let lead=-1;
+
+  let leadX=
+    -Infinity;
+
+  let minX=
+    Infinity;
+
+  let maxX=
+    -Infinity;
 
 
   [...racersEl.children]
     .forEach(
-      (e,i)=>
-      e.classList.toggle(
-        'leader',
-        i===lead
-      )
+      (el,i)=>{
+
+        const worldX =
+          xs[i];
+
+        const y =
+          depthFor(
+            i,
+            state.n,
+            state.seeds[i],
+            h,
+            size
+          );
+
+        const x =
+          worldX -
+          state.cameraX;
+
+        const bounds =
+          trackBounds(
+            h,
+            size
+          );
+
+        const depth =
+          (
+            y -
+            bounds.top
+          ) /
+          Math.max(
+            1,
+            bounds.bottom -
+            bounds.top
+          );
+
+        const scale =
+          .82 +
+          depth*.28;
+
+
+        el.style.transform =
+          `translate3d(
+            ${x-size/2}px,
+            ${y-size/2}px,
+            0
+          )
+          scale(${scale})`;
+
+
+        el.style.zIndex =
+          100 +
+          Math.round(y);
+
+
+        if(
+          worldX >
+          leadX
+        ){
+
+          leadX =
+            worldX;
+
+          lead =
+            i;
+
+        }
+
+
+        minX =
+          Math.min(
+            minX,
+            worldX
+          );
+
+        maxX =
+          Math.max(
+            maxX,
+            worldX
+          );
+
+      }
     );
 
 
-  /* FPS */
+  /*
+     Visual leader / winner
+  */
+
+  [...racersEl.children]
+    .forEach(
+      (e,i)=>{
+
+        e.classList.toggle(
+          'leader',
+          t<1 &&
+          i===lead
+        );
+
+        e.classList.toggle(
+          'winner',
+          t===1 &&
+          state.rank[i]===0
+        );
+
+      }
+    );
+
+
+  /*
+     FPS DEBUG
+  */
 
   state.frames++;
 
-  if(now-state.last>500){
+  if(
+    now -
+    state.lastFps >
+    500
+  ){
 
-    $('#fps').textContent =
+    $('#fps')
+      .textContent =
       `fps≈${
         Math.round(
           state.frames *
           1000 /
-          (now-state.last)
+          (
+            now -
+            state.lastFps
+          )
         )
       }`;
 
     state.frames=0;
-    state.last=now;
+
+    state.lastFps=now;
 
   }
 
 
-  $('#clock').textContent =
+  $('#clock')
+    .textContent =
     `t=${t.toFixed(3)}`;
 
-  $('#camera').textContent =
-    `camera=${Math.round(cameraX)}`;
+  $('#camera')
+    .textContent =
+    `camera=${
+      Math.round(
+        state.cameraX
+      )
+    }`;
+
+  $('#spread')
+    .textContent =
+    `spread=${
+      Math.round(
+        maxX-minX
+      )
+    }`;
 
 
   if(t<1){
 
-    $('#stat').textContent =
-      `${Math.ceil(
-        (1-t) *
-        state.duration /
-        1000
-      )}s`;
+    $('#stat')
+      .textContent =
+      `${
+        Math.max(
+          1,
+          Math.ceil(
+            (
+              1-t
+            ) *
+            state.duration /
+            1000
+          )
+        )
+      }s`;
 
     raf =
-      requestAnimationFrame(frame);
+      requestAnimationFrame(
+        frame
+      );
 
   }
   else{
 
-    $('#stat').textContent =
+    $('#stat')
+      .textContent =
       `WINNER: #${
-        state.rank.indexOf(0)+1
+        state.rank
+          .indexOf(0)+1
       }`;
 
   }
@@ -726,19 +1376,27 @@ function frame(now){
 }
 
 
-/* --------------------------------
+/* ----------------------------
    CONTROLS
--------------------------------- */
+---------------------------- */
 
-$('#start').onclick=start;
+$('#start').onclick =
+  start;
 
-$('#reset').onclick=reset;
+$('#reset').onclick =
+  reset;
 
-$('#count').onchange=reset;
+$('#count').onchange =
+  reset;
 
 addEventListener(
   'resize',
-  reset
+  ()=>{
+
+    if(!state)
+      reset();
+
+  }
 );
 
 reset();

@@ -3,11 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-
-<title>Dark Ecko — Elemental Valley v0.4</title>
+<title>Dark Ecko — Elemental Valley v0.4.1</title>
 
 <style>
-
 *{box-sizing:border-box}
 
 html,body{
@@ -72,11 +70,6 @@ button,input,select{font:inherit}
   font-variant-numeric:tabular-nums;
 }
 
-
-/* =========================================
-   VIEWPORT
-========================================= */
-
 #viewport{
   position:relative;
   overflow:hidden;
@@ -85,51 +78,30 @@ button,input,select{font:inherit}
   background:#06101d;
 }
 
-
-/* =========================================
-   ENVIRONMENT
-
-   These layers remain screen-sized.
-
-   We move their BACKGROUND POSITION rather
-   than physically moving the elements.
-========================================= */
-
 .scene{
   position:absolute;
   inset:0;
   pointer-events:none;
 }
 
-
-/* sky */
-
 #sky{
   z-index:1;
-
   background:
-    radial-gradient(
-      circle at 72% 20%,
+    radial-gradient(circle at 72% 20%,
       #31586c 0 2%,
       #16384c 3% 8%,
-      transparent 18%
-    ),
+      transparent 18%),
     linear-gradient(
       #040a14 0%,
       #071725 48%,
       #0c2527 75%,
-      #102a23 100%
-    );
+      #102a23 100%);
 }
-
-
-/* distant mountains */
 
 #mountains{
   z-index:2;
   top:20%;
   height:43%;
-
   background-image:
     repeating-linear-gradient(
       150deg,
@@ -137,94 +109,60 @@ button,input,select{font:inherit}
       #102832 121px 220px,
       transparent 221px 330px,
       #153440 331px 470px,
-      transparent 471px 610px
-    );
-
+      transparent 471px 610px);
   background-size:900px 100%;
   background-repeat:repeat-x;
 }
-
-
-/* distant forest */
 
 #farTrees{
   z-index:3;
   top:34%;
   height:31%;
-
   background-image:
     repeating-linear-gradient(
       100deg,
       transparent 0 45px,
       #10342c 46px 62px,
-      transparent 63px 100px
-    );
-
+      transparent 63px 100px);
   background-size:650px 100%;
   background-repeat:repeat-x;
-
   opacity:.85;
 }
-
-
-/* near forest */
 
 #nearTrees{
   z-index:4;
   top:28%;
   height:40%;
-
   background-image:
     repeating-linear-gradient(
       96deg,
       transparent 0 90px,
       #0b261e 91px 120px,
-      transparent 121px 180px
-    );
-
+      transparent 121px 180px);
   background-size:720px 100%;
   background-repeat:repeat-x;
 }
 
-
-/* =========================================
-   TRACK
-
-   Screen-space track.
-   It no longer needs to be 9000px long.
-========================================= */
-
 #track{
   position:absolute;
-
   left:0;
   right:0;
-
   top:57%;
   height:35%;
-
   z-index:5;
-
   overflow:hidden;
 
   background:
     linear-gradient(
       #294038 0 3%,
       #1a2924 3% 88%,
-      #101815 88% 100%
-    );
+      #101815 88% 100%);
 
   border-top:3px solid #46d8d8;
   border-bottom:3px solid #17302d;
 
-  box-shadow:
-    inset 0 10px 30px #0005;
+  box-shadow:inset 0 10px 30px #0005;
 }
-
-
-/*
-Moving ground texture.
-*/
 
 #trackTexture{
   position:absolute;
@@ -235,59 +173,37 @@ Moving ground texture.
       90deg,
       transparent 0 145px,
       #ffffff0c 145px 148px,
-      transparent 148px 290px
-    );
+      transparent 148px 290px);
 
   background-size:290px 100%;
   background-repeat:repeat-x;
 }
 
-
-/*
-Moving center markings.
-*/
-
 #trackLines{
   position:absolute;
-
   left:0;
   right:0;
-
   top:50%;
-
   height:2px;
 
   background-image:
     repeating-linear-gradient(
       90deg,
       #7ad8d2 0 42px,
-      transparent 42px 82px
-    );
+      transparent 42px 82px);
 
   background-size:82px 2px;
   background-repeat:repeat-x;
-
   opacity:.25;
 }
 
-
-/* =========================================
-   FOREGROUND
-
-   Faster than track to exaggerate speed.
-========================================= */
-
 #foreground{
   position:absolute;
-
   left:0;
   right:0;
-
   top:88%;
   height:15%;
-
   z-index:30;
-
   pointer-events:none;
 
   background-image:
@@ -295,57 +211,43 @@ Moving center markings.
       105deg,
       transparent 0 65px,
       #071813 66px 91px,
-      transparent 92px 145px
-    );
+      transparent 92px 145px);
 
   background-size:430px 100%;
   background-repeat:repeat-x;
 }
 
-
-/* =========================================
-   RACERS
-========================================= */
-
 #racers{
   position:absolute;
   inset:0;
-
   z-index:20;
-
   pointer-events:none;
 }
 
-
 .racer{
   position:absolute;
-
   left:0;
   top:0;
 
   width:var(--size,28px);
   height:var(--size,28px);
 
-  border-radius:
-    50% 50% 45% 45%;
+  border-radius:50% 50% 45% 45%;
 
   background:
     radial-gradient(
       circle at 35% 30%,
       #e7fdff 0 8%,
       #58e8ff 9% 35%,
-      #18374d 36% 100%
-    );
+      #18374d 36% 100%);
 
   box-shadow:
     0 4px 10px #0009,
     0 0 10px #39ddff55;
 
   transform-origin:center;
-
   will-change:transform;
 }
-
 
 .racer:after{
   content:attr(data-n);
@@ -356,14 +258,10 @@ Moving center markings.
   display:grid;
   place-items:center;
 
-  font-size:
-    calc(var(--size,28px)*.36);
-
+  font-size:calc(var(--size,28px)*.36);
   font-weight:900;
-
   color:#031018;
 }
-
 
 .racer.leader{
   outline:2px solid white;
@@ -373,34 +271,20 @@ Moving center markings.
     0 0 18px #fff9;
 }
 
-
 .racer.winner{
   outline:3px solid white;
-
-  filter:
-    brightness(1.3);
+  filter:brightness(1.3);
 
   box-shadow:
     0 0 25px #fff,
     0 0 45px #39ddff88;
 }
 
-
-/* =========================================
-   FINISH LANDMARK
-
-   Normally off screen.
-
-   During final approach it enters
-   from the right.
-========================================= */
-
 #finish{
   position:absolute;
 
   top:54%;
   height:41%;
-
   width:6px;
 
   z-index:18;
@@ -412,42 +296,33 @@ Moving center markings.
     0 0 30px #44e8ff88;
 
   pointer-events:none;
-
   opacity:0;
 
   will-change:transform,opacity;
 }
 
-
 #finish:before{
   content:"FINISH";
 
   position:absolute;
-
   top:-27px;
   left:-38px;
 
   width:82px;
-
   text-align:center;
 
   font-size:10px;
   font-weight:900;
-
   letter-spacing:.14em;
 
   color:#bffaff;
-
-  text-shadow:
-    0 0 8px #26d9ff;
+  text-shadow:0 0 8px #26d9ff;
 }
-
 
 #finish:after{
   content:"";
 
   position:absolute;
-
   top:0;
   left:-8px;
 
@@ -455,77 +330,53 @@ Moving center markings.
   height:4px;
 
   background:#eaffff;
-
-  box-shadow:
-    0 0 10px #26d9ff;
+  box-shadow:0 0 10px #26d9ff;
 }
-
-
-/* =========================================
-   UI
-========================================= */
 
 .title{
   position:absolute;
-
   left:4%;
   top:6%;
-
   z-index:40;
 
-  font-size:
-    clamp(18px,4vw,46px);
-
+  font-size:clamp(18px,4vw,46px);
   font-weight:900;
-
   letter-spacing:.08em;
 
   color:#7ff5ff;
-
-  text-shadow:
-    0 0 18px #26d9ff66;
+  text-shadow:0 0 18px #26d9ff66;
 
   pointer-events:none;
 }
 
-
 .subtitle{
   position:absolute;
-
   left:4%;
   top:15%;
-
   z-index:40;
 
   color:#7c9aa7;
-
   font-size:11px;
 
   pointer-events:none;
 }
-
 
 #progressWrap{
   position:absolute;
 
   left:4%;
   right:4%;
-
   bottom:3%;
 
   height:5px;
-
   z-index:40;
 
   background:#071117;
-
   border:1px solid #1d4553;
 
   border-radius:10px;
-
   overflow:hidden;
 }
-
 
 #progress{
   height:100%;
@@ -535,42 +386,27 @@ Moving center markings.
     linear-gradient(
       90deg,
       #36bfdc,
-      #b45cff
-    );
+      #b45cff);
 }
-
-
-/* =========================================
-   DEBUG
-========================================= */
 
 #debug{
   padding:7px 12px;
 
   background:#080c14;
-
-  border-top:
-    1px solid #183849;
+  border-top:1px solid #183849;
 
   color:#809ba8;
 
-  font:
-    11px ui-monospace,monospace;
+  font:11px ui-monospace,monospace;
 
   display:flex;
-
   gap:16px;
 
   white-space:nowrap;
-
   overflow:auto;
 }
 
-
-.pass{
-  color:#7fffb2;
-}
-
+.pass{color:#7fffb2}
 
 @media(max-width:650px){
 
@@ -579,215 +415,132 @@ Moving center markings.
     padding:7px 8px;
   }
 
-  .brand{
-    width:100%;
-  }
+  .brand{width:100%}
 
-  .stat{
-    margin-left:0;
-  }
+  .stat{margin-left:0}
 
-  .subtitle{
-    display:none;
-  }
+  .subtitle{display:none}
 
-  #debug{
-    font-size:10px;
-  }
+  #debug{font-size:10px}
 
-  .title{
-    top:3%;
-  }
-
+  .title{top:3%}
 }
-
 </style>
 </head>
-
 
 <body>
 
 <div id="app">
 
+  <div class="bar">
 
-<!-- =====================================
-     CONTROLS
-===================================== -->
+    <div class="brand">
+      DARK ECKO // ELEMENTAL VALLEY
+    </div>
 
-<div class="bar">
+    <label>
+      Racers
+      <input
+        id="count"
+        type="number"
+        min="1"
+        max="50"
+        value="12"
+        style="width:60px">
+    </label>
 
-  <div class="brand">
-    DARK ECKO // ELEMENTAL VALLEY
-  </div>
+    <label>
+      Duration
+      <select id="duration">
+        <option value="5">5s</option>
+        <option value="10" selected>10s</option>
+        <option value="30">30s</option>
+        <option value="60">60s</option>
+      </select>
+    </label>
 
-  <label>
-    Racers
-    <input
-      id="count"
-      type="number"
-      min="1"
-      max="50"
-      value="12"
-      style="width:60px">
-  </label>
+    <button id="start">Start</button>
+    <button id="reset">Reset</button>
 
-  <label>
-    Duration
-
-    <select id="duration">
-
-      <option value="5">
-        5s
-      </option>
-
-      <option
-        value="10"
-        selected>
-        10s
-      </option>
-
-      <option value="30">
-        30s
-      </option>
-
-      <option value="60">
-        60s
-      </option>
-
-    </select>
-
-  </label>
-
-  <button id="start">
-    Start
-  </button>
-
-  <button id="reset">
-    Reset
-  </button>
-
-  <div
-    id="stat"
-    class="stat">
-    READY
-  </div>
-
-</div>
-
-
-<!-- =====================================
-     RACE VIEWPORT
-===================================== -->
-
-<div id="viewport">
-
-  <div
-    id="sky"
-    class="scene">
-  </div>
-
-  <div
-    id="mountains"
-    class="scene">
-  </div>
-
-  <div
-    id="farTrees"
-    class="scene">
-  </div>
-
-  <div
-    id="nearTrees"
-    class="scene">
-  </div>
-
-
-  <div id="track">
-
-    <div id="trackTexture"></div>
-
-    <div id="trackLines"></div>
+    <div id="stat" class="stat">
+      READY
+    </div>
 
   </div>
 
 
-  <div id="racers"></div>
+  <div id="viewport">
 
+    <div id="sky" class="scene"></div>
+    <div id="mountains" class="scene"></div>
+    <div id="farTrees" class="scene"></div>
+    <div id="nearTrees" class="scene"></div>
 
-  <div id="finish"></div>
+    <div id="track">
+      <div id="trackTexture"></div>
+      <div id="trackLines"></div>
+    </div>
 
+    <div id="racers"></div>
 
-  <div id="foreground"></div>
+    <div id="finish"></div>
 
+    <div id="foreground"></div>
 
-  <div class="title">
-    FOREST RUN
+    <div class="title">
+      FOREST RUN
+    </div>
+
+    <div class="subtitle">
+      v0.4.1 — adaptive pack dynamics
+    </div>
+
+    <div id="progressWrap">
+      <div id="progress"></div>
+    </div>
+
   </div>
 
-  <div class="subtitle">
-    v0.4 — virtual race + pack renderer
+
+  <div id="debug">
+
+    <span id="clock">
+      t=0.000
+    </span>
+
+    <span id="logical">
+      logical=0
+    </span>
+
+    <span id="spread">
+      spread=0
+    </span>
+
+    <span id="screenSpread">
+      screen=0
+    </span>
+
+    <span id="mode">
+      mode=PACK
+    </span>
+
+    <span id="fps">
+      fps=—
+    </span>
+
+    <span class="pass">
+      RESULT LOCKED BEFORE START
+    </span>
+
   </div>
-
-
-  <div id="progressWrap">
-
-    <div id="progress"></div>
-
-  </div>
-
-</div>
-
-
-<!-- =====================================
-     DEBUG
-===================================== -->
-
-<div id="debug">
-
-  <span id="clock">
-    t=0.000
-  </span>
-
-  <span id="logical">
-    logical=0
-  </span>
-
-  <span id="spread">
-    spread=0
-  </span>
-
-  <span id="mode">
-    mode=PACK
-  </span>
-
-  <span id="fps">
-    fps=—
-  </span>
-
-  <span class="pass">
-    WORLD=9000 logical units
-  </span>
-
-  <span class="pass">
-    CSPRNG → locked order → reveal
-  </span>
-
-</div>
-
 
 </div>
 
 
 <script>
 
-/* =========================================
-   DOM
-========================================= */
-
 const $ =
-  s =>
-    document.querySelector(s);
-
+  s => document.querySelector(s);
 
 const viewport =
   $('#viewport');
@@ -800,12 +553,7 @@ const finishEl =
 
 
 /* =========================================
-   LOGICAL WORLD
-
-   WORLD still exists.
-
-   It is no longer literally rendered
-   as a 9000px DOM element.
+   LOGICAL RACE
 ========================================= */
 
 const WORLD = 9000;
@@ -818,17 +566,13 @@ const RACE_DISTANCE =
   FINISH_X - START_X;
 
 
-/* =========================================
-   STATE
-========================================= */
-
 let raf = 0;
 
 let state = null;
 
 
 /* =========================================
-   BASIC HELPERS
+   HELPERS
 ========================================= */
 
 function clamp(v,a,b){
@@ -840,21 +584,28 @@ function clamp(v,a,b){
 
 }
 
-
 function lerp(a,b,t){
 
-  return a +
-    (b-a)*t;
+  return a+(b-a)*t;
 
 }
 
-
 function smoothstep(t){
 
-  t =
-    clamp(t,0,1);
+  t=clamp(t,0,1);
 
   return t*t*(3-2*t);
+
+}
+
+function smootherstep(t){
+
+  t=clamp(t,0,1);
+
+  return t*t*t*
+    (
+      t*(t*6-15)+10
+    );
 
 }
 
@@ -862,7 +613,7 @@ function smoothstep(t){
 /* =========================================
    SECURE RNG
 
-   UNCHANGED.
+   SAME CORE AS v0.4
 ========================================= */
 
 function secureInt(max){
@@ -871,29 +622,21 @@ function secureInt(max){
     max<=0 ||
     max>0x100000000
   ){
-
-    throw Error(
-      'bad max'
-    );
-
+    throw Error('bad max');
   }
 
   const lim =
     Math.floor(
       0x100000000/max
-    ) * max;
+    )*max;
 
   const a =
     new Uint32Array(1);
 
   do{
-
     crypto.getRandomValues(a);
-
   }
-  while(
-    a[0]>=lim
-  );
+  while(a[0]>=lim);
 
   return a[0]%max;
 
@@ -903,7 +646,7 @@ function secureInt(max){
 /* =========================================
    FISHER-YATES
 
-   UNCHANGED.
+   SAME CORE AS v0.4
 ========================================= */
 
 function shuffle(n){
@@ -934,28 +677,21 @@ function shuffle(n){
 
 
 /* =========================================
-   RACER SIZE
+   RACER PRESENTATION
 ========================================= */
 
 function racerSize(n){
 
-  if(n<=8)
-    return 34;
+  if(n<=8) return 34;
 
-  if(n<=16)
-    return 29;
+  if(n<=16) return 29;
 
-  if(n<=30)
-    return 24;
+  if(n<=30) return 24;
 
   return 19;
 
 }
 
-
-/* =========================================
-   CREATE RACERS
-========================================= */
 
 function makeRacers(n){
 
@@ -971,24 +707,18 @@ function makeRacers(n){
   ){
 
     const el =
-      document.createElement(
-        'div'
-      );
+      document.createElement('div');
 
-    el.className =
-      'racer';
+    el.className='racer';
 
-    el.dataset.n =
-      i+1;
+    el.dataset.n=i+1;
 
     el.style.setProperty(
       '--size',
       size+'px'
     );
 
-    racersEl.appendChild(
-      el
-    );
+    racersEl.appendChild(el);
 
   }
 
@@ -996,9 +726,7 @@ function makeRacers(n){
 
 
 /* =========================================
-   TRACK DEPTH
-
-   Y is purely visual.
+   DEPTH
 ========================================= */
 
 function trackBounds(
@@ -1019,13 +747,8 @@ function trackBounds(
     );
 
   return{
-
-    top:
-      top+padding,
-
-    bottom:
-      bottom-padding
-
+    top:top+padding,
+    bottom:bottom-padding
   };
 
 }
@@ -1048,62 +771,51 @@ function depthFor(
   if(n===1){
 
     return(
-      bounds.top +
+      bounds.top+
       bounds.bottom
     )/2;
 
   }
 
-
   const slots =
-    Math.min(
-      n,
-      14
-    );
-
+    Math.min(n,14);
 
   const slot =
     i%slots;
 
-
   const base =
-    bounds.top +
+    bounds.top+
     (
-      bounds.bottom -
+      bounds.bottom-
       bounds.top
-    ) *
+    )*
     (
-      slot /
+      slot/
       Math.max(
         1,
         slots-1
       )
     );
 
-
   const row =
     Math.floor(
       i/slots
     );
-
 
   const stagger =
     row%2
       ? 3
       : -3;
 
-
   const jitter =
     (seed-.5)*5;
 
-
   return clamp(
-    base +
-    stagger +
+    base+
+    stagger+
     jitter,
 
     bounds.top,
-
     bounds.bottom
   );
 
@@ -1111,12 +823,18 @@ function depthFor(
 
 
 /* =========================================
-   LOGICAL RACER POSITION
+   RACE DYNAMICS v0.4.1
 
-   THIS is the actual race.
+   IMPORTANT:
 
-   Screen movement is derived from this,
-   never the other way around.
+   The locked rank contributes essentially
+   nothing during the normal race.
+
+   Racers battle using independent wave
+   motion.
+
+   The final result begins asserting itself
+   only very late.
 ========================================= */
 
 function logicalPosition(
@@ -1130,12 +848,12 @@ function logicalPosition(
   const rank =
     state.rank[i];
 
-  const seed =
-    state.seeds[i];
+  const s =
+    state.motion[i];
 
 
   /*
-    Overall forward progress.
+    Main forward movement.
   */
 
   const base =
@@ -1143,87 +861,167 @@ function logicalPosition(
 
 
   /*
-    Temporary visual/race drama.
+    Mid-race activity envelope.
 
-    These create overtakes but disappear
-    at start and finish.
+    Strong in the middle.
+    Zero at start and finish.
   */
 
-  const envelope =
+  const activity =
     Math.pow(
-      Math.sin(
-        Math.PI*t
-      ),
-      1.25
+      Math.sin(Math.PI*t),
+      .82
     );
-
-
-  const surge1 =
-    Math.sin(
-      t*(13+seed*4) +
-      seed*20
-    ) * 85;
-
-
-  const surge2 =
-    Math.sin(
-      t*(31+seed*8) +
-      seed*11
-    ) * 34;
-
-
-  const surge =
-    (
-      surge1 +
-      surge2
-    ) *
-    envelope;
 
 
   /*
-    Locked finish order gradually becomes
-    visible late in the race.
+    Every racer receives several different
+    frequencies and phases.
+
+    This makes lead changes less synchronized
+    than the old two-wave system.
   */
 
-  const rankNorm =
-    n===1
-      ? 1
-      : 1 -
-        rank/(n-1);
+  const waveA =
+    Math.sin(
+      t*s.freqA+
+      s.phaseA
+    )*s.ampA;
 
 
-  const separation =
+  const waveB =
+    Math.sin(
+      t*s.freqB+
+      s.phaseB
+    )*s.ampB;
+
+
+  const waveC =
+    Math.sin(
+      t*s.freqC+
+      s.phaseC
+    )*s.ampC;
+
+
+  /*
+    Slow "form" component.
+
+    A racer can have a good or bad portion
+    of the race without it determining the
+    actual result.
+  */
+
+  const form =
+    Math.sin(
+      Math.PI*
+      (
+        t*s.formFreq+
+        s.formPhase
+      )
+    )*
+    s.formAmp;
+
+
+  const drama =
     (
-      rankNorm-.5
-    ) *
-    Math.min(
-      260,
-      90+n*4
-    ) *
-    Math.pow(
-      t,
-      6
-    );
+      waveA+
+      waveB+
+      waveC+
+      form
+    )*
+    activity;
+
+
+  /*
+    RESULT REVEAL
+
+    No rank influence until 91%.
+
+    91–97%:
+    begin converging toward the locked order.
+
+    97–100%:
+    rapidly resolve exact finish.
+  */
+
+  let resultBias=0;
+
+
+  if(t>.91){
+
+    const reveal =
+      smootherstep(
+        (t-.91)/.09
+      );
+
+
+    const rankNorm =
+      n===1
+        ? 1
+        : 1-
+          rank/(n-1);
+
+
+    /*
+      Winner gets positive final offset.
+      Last place gets negative final offset.
+    */
+
+    const targetOffset =
+      (
+        rankNorm-.5
+      )*
+      Math.min(
+        220,
+        90+n*2.6
+      );
+
+
+    resultBias =
+      targetOffset*
+      reveal;
+
+  }
+
+
+  /*
+    As the locked result appears,
+    random race drama fades away.
+  */
+
+  let dramaFade=1;
+
+
+  if(t>.91){
+
+    dramaFade =
+      1-
+      smootherstep(
+        (t-.91)/.09
+      );
+
+  }
 
 
   let x =
-    START_X +
-    RACE_DISTANCE *
-    base +
-    surge +
-    separation;
+    START_X+
+    RACE_DISTANCE*
+    base+
+    drama*
+    dramaFade+
+    resultBias;
 
 
   x =
     clamp(
       x,
       START_X-100,
-      FINISH_X+180
+      FINISH_X+200
     );
 
 
   /*
-    Exact locked final order.
+    Exact locked final spatial order.
   */
 
   if(t>=1){
@@ -1231,19 +1029,16 @@ function logicalPosition(
     const gap =
       Math.min(
         9,
-        150 /
-        Math.max(
-          1,
-          n
-        )
+        150/
+        Math.max(1,n)
       );
 
 
     x =
-      FINISH_X +
+      FINISH_X+
       (
         n-1-rank
-      ) *
+      )*
       gap;
 
   }
@@ -1255,13 +1050,7 @@ function logicalPosition(
 
 
 /* =========================================
-   PACK CENTER
-
-   The racers' WORLD positions may be
-   thousands of units down the course.
-
-   This converts that race into a pack
-   centered around the screen.
+   PACK REFERENCE
 ========================================= */
 
 function packReference(xs){
@@ -1292,72 +1081,132 @@ function packReference(xs){
 
 
   return(
-    median*.60 +
-    p70*.40
+    median*.65+
+    p70*.35
   );
 
 }
 
 
 /* =========================================
-   SCREEN PACK POSITION
+   ADAPTIVE PACK SCALE
+
+   This is the important 1–50 racer change.
+
+   We calculate the logical spread and
+   choose a visual scale that keeps the
+   pack readable inside the viewport.
 ========================================= */
 
-function packScreenX(
-  worldX,
-  reference,
+function packScale(
+  xs,
   width,
   t
 ){
 
+  if(xs.length<=1)
+    return 1.7;
+
+
+  const min =
+    Math.min(...xs);
+
+  const max =
+    Math.max(...xs);
+
+  const spread =
+    Math.max(
+      1,
+      max-min
+    );
+
+
   /*
-    Pack sits around 46% screen width.
+    Maximum width occupied by the pack.
+
+    Large fields get slightly more room.
   */
 
-  const center =
-    width*.46;
+  let allowed =
+    width*.58;
+
+
+  if(xs.length>30)
+    allowed=width*.64;
 
 
   /*
-    Convert logical separation into
-    visible racer separation.
+    Scale needed to fit current spread.
+  */
 
-    This is intentionally amplified.
+  const fit =
+    allowed/spread;
+
+
+  /*
+    Never make normal movement microscopic
+    or absurdly exaggerated.
   */
 
   let scale =
-    1.55;
+    clamp(
+      fit,
+      .72,
+      1.85
+    );
 
 
   /*
-    Near the finish we expand the pack
-    slightly so order becomes easier
-    to read.
+    During final approach we intentionally
+    expand separation slightly.
   */
 
-  if(t>.82){
+  if(t>.91){
 
     const k =
-      smoothstep(
-        (t-.82)/.18
+      smootherstep(
+        (t-.91)/.09
       );
+
 
     scale =
       lerp(
-        1.55,
-        2.15,
+        scale,
+        Math.min(
+          scale*1.25,
+          2.1
+        ),
         k
       );
 
   }
 
 
+  return scale;
+
+}
+
+
+/* =========================================
+   SCREEN POSITION
+========================================= */
+
+function packScreenX(
+  worldX,
+  reference,
+  width,
+  scale
+){
+
+  const center =
+    width*.46;
+
+
   return(
-    center +
+    center+
     (
-      worldX -
-      reference
-    ) *
+      worldX-reference
+    )*
     scale
   );
 
@@ -1365,32 +1214,16 @@ function packScreenX(
 
 
 /* =========================================
-   ENVIRONMENT MOVEMENT
-
-   Logical race progress controls how far
-   the environment appears to have moved.
+   ENVIRONMENT
 ========================================= */
 
 function renderEnvironment(
   logicalProgress
 ){
 
-  /*
-    These numbers are deliberately not
-    world pixels.
-
-    They are visual travel distances.
-  */
-
   const travel =
-    logicalProgress * 7200;
+    logicalProgress*7200;
 
-
-  /*
-    Negative movement means environment
-    travels left while racers appear
-    to travel right.
-  */
 
   $('#mountains')
     .style.backgroundPositionX =
@@ -1425,12 +1258,11 @@ function renderEnvironment(
 
 
 /* =========================================
-   FINISH APPROACH
+   FINISH
 
-   At 88% the finish line starts entering
-   from the right.
+   Later than v0.4.
 
-   By the end it is near 78% screen width.
+   Finish becomes visible at 91%.
 ========================================= */
 
 function renderFinish(
@@ -1438,14 +1270,12 @@ function renderFinish(
   width
 ){
 
-  const start =
-    .88;
+  const start=.91;
 
 
   if(t<start){
 
-    finishEl.style.opacity =
-      0;
+    finishEl.style.opacity=0;
 
     finishEl.style.transform =
       `translate3d(
@@ -1460,18 +1290,24 @@ function renderFinish(
 
 
   const k =
-    smoothstep(
-      (t-start) /
+    smootherstep(
+      (t-start)/
       (1-start)
     );
 
 
+  /*
+    Starts beyond the right edge.
+
+    Ends around 76% viewport width.
+  */
+
   const startX =
-    width + 80;
+    width+90;
 
 
   const endX =
-    width*.78;
+    width*.76;
 
 
   const x =
@@ -1482,8 +1318,7 @@ function renderFinish(
     );
 
 
-  finishEl.style.opacity =
-    1;
+  finishEl.style.opacity=1;
 
 
   finishEl.style.transform =
@@ -1505,24 +1340,20 @@ function renderFinish(
 
 function reset(){
 
-  cancelAnimationFrame(
-    raf
-  );
-
+  cancelAnimationFrame(raf);
 
   state=null;
 
 
   const n =
     clamp(
-      +$('#count').value || 1,
+      +$('#count').value||1,
       1,
       50
     );
 
 
-  $('#count').value =
-    n;
+  $('#count').value=n;
 
 
   makeRacers(n);
@@ -1555,7 +1386,7 @@ function reset(){
 
 
         const x =
-          width*.40 +
+          width*.42+
           (
             (i%5)-2
           )*4;
@@ -1570,18 +1401,17 @@ function reset(){
 
         const depth =
           (
-            y -
-            bounds.top
-          ) /
+            y-bounds.top
+          )/
           Math.max(
             1,
-            bounds.bottom -
+            bounds.bottom-
             bounds.top
           );
 
 
         const scale =
-          .82 +
+          .82+
           depth*.28;
 
 
@@ -1595,7 +1425,7 @@ function reset(){
 
 
         el.style.zIndex =
-          100 +
+          100+
           Math.round(y);
 
 
@@ -1611,38 +1441,35 @@ function reset(){
   renderEnvironment(0);
 
 
-  finishEl.style.opacity =
-    0;
+  finishEl.style.opacity=0;
 
 
   $('#progress')
-    .style.width =
-    '0%';
+    .style.width='0%';
 
 
   $('#stat')
-    .textContent =
-    'READY';
+    .textContent='READY';
 
 
   $('#clock')
-    .textContent =
-    't=0.000';
+    .textContent='t=0.000';
 
 
   $('#logical')
-    .textContent =
-    'logical=0';
+    .textContent='logical=0';
 
 
   $('#spread')
-    .textContent =
-    'spread=0';
+    .textContent='spread=0';
+
+
+  $('#screenSpread')
+    .textContent='screen=0';
 
 
   $('#mode')
-    .textContent =
-    'mode=PACK';
+    .textContent='mode=PACK';
 
 }
 
@@ -1650,38 +1477,36 @@ function reset(){
 /* =========================================
    START
 
-   RESULT IS LOCKED BEFORE ANIMATION.
+   COMPLETE RESULT IS LOCKED HERE,
+   BEFORE requestAnimationFrame STARTS.
 ========================================= */
 
 function start(){
 
-  cancelAnimationFrame(
-    raf
-  );
+  cancelAnimationFrame(raf);
 
 
   const n =
     clamp(
-      +$('#count').value || 1,
+      +$('#count').value||1,
       1,
       50
     );
 
 
   const duration =
-    +$('#duration').value *
+    +$('#duration').value*
     1000;
 
 
-  $('#count').value =
-    n;
+  $('#count').value=n;
 
 
   makeRacers(n);
 
 
   /*
-    RESULT GENERATED HERE.
+    LOCKED RESULT
   */
 
   const order =
@@ -1694,24 +1519,72 @@ function start(){
 
   order.forEach(
     (id,index)=>{
-
-      rank[id] =
-        index;
-
+      rank[id]=index;
     }
   );
 
 
   /*
-    Visual seeds are independent.
+    Presentation-only motion parameters.
+
+    They are random, but they DO NOT change
+    the already locked finishing order.
   */
 
-  const seeds =
+  const motion =
     Array.from(
       {length:n},
-      ()=>
-        secureInt(1000000) /
-        1000000
+      ()=>({
+
+        freqA:
+          10+
+          secureInt(7000)/1000,
+
+        freqB:
+          23+
+          secureInt(10000)/1000,
+
+        freqC:
+          41+
+          secureInt(15000)/1000,
+
+        phaseA:
+          secureInt(6283)/1000,
+
+        phaseB:
+          secureInt(6283)/1000,
+
+        phaseC:
+          secureInt(6283)/1000,
+
+        ampA:
+          50+
+          secureInt(46),
+
+        ampB:
+          20+
+          secureInt(30),
+
+        ampC:
+          7+
+          secureInt(17),
+
+        formFreq:
+          1.1+
+          secureInt(1200)/1000,
+
+        formPhase:
+          secureInt(2000)/1000,
+
+        formAmp:
+          25+
+          secureInt(51),
+
+        depthSeed:
+          secureInt(1000000)/
+          1000000
+
+      })
     );
 
 
@@ -1728,7 +1601,7 @@ function start(){
 
     rank,
 
-    seeds,
+    motion,
 
     positions:
       new Array(n)
@@ -1743,14 +1616,11 @@ function start(){
 
 
   $('#stat')
-    .textContent =
-    'RACING';
+    .textContent='RACING';
 
 
   raf =
-    requestAnimationFrame(
-      frame
-    );
+    requestAnimationFrame(frame);
 
 }
 
@@ -1768,9 +1638,8 @@ function frame(now){
   const t =
     clamp(
       (
-        now -
-        state.start
-      ) /
+        now-state.start
+      )/
       state.duration,
       0,
       1
@@ -1786,13 +1655,11 @@ function frame(now){
 
 
   const size =
-    racerSize(
-      state.n
-    );
+    racerSize(state.n);
 
 
   /*
-    Calculate REAL logical positions.
+    Calculate logical racer positions.
   */
 
   for(
@@ -1802,17 +1669,10 @@ function frame(now){
   ){
 
     state.positions[i] =
-      logicalPosition(
-        i,
-        t
-      );
+      logicalPosition(i,t);
 
   }
 
-
-  /*
-    Determine pack reference.
-  */
 
   const reference =
     packReference(
@@ -1820,17 +1680,12 @@ function frame(now){
     );
 
 
-  /*
-    Convert reference position to
-    normalized world progress.
-  */
-
   const logicalProgress =
     clamp(
       (
-        reference -
+        reference-
         START_X
-      ) /
+      )/
       RACE_DISTANCE,
       0,
       1
@@ -1838,18 +1693,22 @@ function frame(now){
 
 
   /*
-    Environment movement is driven
-    by logical race progress.
+    Determine visual pack scale from
+    current logical spread.
   */
+
+  const visualPackScale =
+    packScale(
+      state.positions,
+      width,
+      t
+    );
+
 
   renderEnvironment(
     logicalProgress
   );
 
-
-  /*
-    Finish is an environmental landmark.
-  */
 
   const finishScreenX =
     renderFinish(
@@ -1858,25 +1717,18 @@ function frame(now){
     );
 
 
-  let leader =
-    -1;
+  let leader=-1;
 
+  let leaderX=-Infinity;
 
-  let leaderX =
-    -Infinity;
+  let minWorld=Infinity;
 
+  let maxWorld=-Infinity;
 
-  let minX =
-    Infinity;
+  let minScreen=Infinity;
 
+  let maxScreen=-Infinity;
 
-  let maxX =
-    -Infinity;
-
-
-  /*
-    Draw racers.
-  */
 
   [...racersEl.children]
     .forEach(
@@ -1891,46 +1743,79 @@ function frame(now){
             worldX,
             reference,
             width,
-            t
+            visualPackScale
           );
 
 
         /*
-          FINAL APPROACH
+          FINISH TRANSITION
 
-          During the final 12%, the finish
-          line becomes a real visual target.
+          Until 91%:
+          pure pack renderer.
 
-          We gradually map racers toward
-          their distance from FINISH_X.
+          91–96%:
+          finish arrives but pack behavior
+          remains dominant.
+
+          96–100%:
+          racers become increasingly tied
+          to their real distance from the
+          finish line.
         */
 
         if(
-          t>=.88 &&
+          t>.96 &&
           finishScreenX!==null
         ){
 
-          const k =
-            smoothstep(
-              (t-.88)/.12
+          const finishBlend =
+            smootherstep(
+              (t-.96)/.04
             );
 
 
           const distanceToFinish =
-            worldX -
+            worldX-
             FINISH_X;
 
 
           const finishMappedX =
-            finishScreenX +
-            distanceToFinish*2.15;
+            finishScreenX+
+            distanceToFinish*2.35;
 
 
           screenX =
             lerp(
               screenX,
               finishMappedX,
-              k
+              finishBlend
+            );
+
+        }
+
+
+        /*
+          Safety margin during normal pack
+          mode.
+
+          This affects ONLY rendering.
+          Never logical position.
+        */
+
+        if(t<.96){
+
+          const margin =
+            Math.max(
+              size,
+              width*.045
+            );
+
+
+          screenX =
+            clamp(
+              screenX,
+              margin,
+              width-margin
             );
 
         }
@@ -1940,7 +1825,7 @@ function frame(now){
           depthFor(
             i,
             state.n,
-            state.seeds[i],
+            state.motion[i].depthSeed,
             height,
             size
           );
@@ -1955,18 +1840,17 @@ function frame(now){
 
         const depth =
           (
-            y -
-            bounds.top
-          ) /
+            y-bounds.top
+          )/
           Math.max(
             1,
-            bounds.bottom -
+            bounds.bottom-
             bounds.top
           );
 
 
-        const visualScale =
-          .82 +
+        const visualDepthScale =
+          .82+
           depth*.28;
 
 
@@ -1976,39 +1860,48 @@ function frame(now){
             ${y-size/2}px,
             0
           )
-          scale(${visualScale})`;
+          scale(${visualDepthScale})`;
 
 
         el.style.zIndex =
-          100 +
+          100+
           Math.round(y);
 
 
-        if(
-          worldX >
-          leaderX
-        ){
+        if(worldX>leaderX){
 
-          leaderX =
-            worldX;
+          leaderX=worldX;
 
-          leader =
-            i;
+          leader=i;
 
         }
 
 
-        minX =
+        minWorld =
           Math.min(
-            minX,
+            minWorld,
             worldX
           );
 
 
-        maxX =
+        maxWorld =
           Math.max(
-            maxX,
+            maxWorld,
             worldX
+          );
+
+
+        minScreen =
+          Math.min(
+            minScreen,
+            screenX
+          );
+
+
+        maxScreen =
+          Math.max(
+            maxScreen,
+            screenX
           );
 
       }
@@ -2016,7 +1909,7 @@ function frame(now){
 
 
   /*
-    Leader / winner highlighting.
+    Highlight current leader during race.
   */
 
   [...racersEl.children]
@@ -2040,18 +1933,10 @@ function frame(now){
     );
 
 
-  /*
-    Progress bar.
-  */
-
   $('#progress')
     .style.width =
     `${logicalProgress*100}%`;
 
-
-  /*
-    Debug information.
-  */
 
   $('#clock')
     .textContent =
@@ -2061,9 +1946,7 @@ function frame(now){
   $('#logical')
     .textContent =
     `logical=${
-      Math.round(
-        reference
-      )
+      Math.round(reference)
     }`;
 
 
@@ -2071,37 +1954,48 @@ function frame(now){
     .textContent =
     `spread=${
       Math.round(
-        maxX-minX
+        maxWorld-minWorld
+      )
+    }`;
+
+
+  $('#screenSpread')
+    .textContent =
+    `screen=${
+      Math.round(
+        maxScreen-minScreen
       )
     }`;
 
 
   $('#mode')
     .textContent =
-    t<.88
+    t<.91
       ? 'mode=PACK'
-      : 'mode=FINISH';
+      : t<.96
+        ? 'mode=APPROACH'
+        : 'mode=FINISH';
 
 
   /*
-    FPS.
+    FPS
   */
 
   state.frames++;
 
 
   if(
-    now -
-    state.lastFps >
+    now-
+    state.lastFps>
     500
   ){
 
     const measured =
       Math.round(
-        state.frames *
-        1000 /
+        state.frames*
+        1000/
         (
-          now -
+          now-
           state.lastFps
         )
       );
@@ -2114,15 +2008,10 @@ function frame(now){
 
     state.frames=0;
 
-
     state.lastFps=now;
 
   }
 
-
-  /*
-    Continue / finish.
-  */
 
   if(t<1){
 
@@ -2132,8 +2021,8 @@ function frame(now){
         Math.ceil(
           (
             1-t
-          ) *
-          state.duration /
+          )*
+          state.duration/
           1000
         )
       );
@@ -2145,17 +2034,15 @@ function frame(now){
 
 
     raf =
-      requestAnimationFrame(
-        frame
-      );
+      requestAnimationFrame(frame);
 
   }
+
   else{
 
 
     const winner =
-      state.rank
-        .indexOf(0)+1;
+      state.rank.indexOf(0)+1;
 
 
     $('#stat')
@@ -2172,29 +2059,23 @@ function frame(now){
 ========================================= */
 
 $('#start')
-  .onclick =
-  start;
+  .onclick=start;
 
 
 $('#reset')
-  .onclick =
-  reset;
+  .onclick=reset;
 
 
 $('#count')
-  .onchange =
-  reset;
+  .onchange=reset;
 
 
 addEventListener(
   'resize',
   ()=>{
 
-    if(!state){
-
+    if(!state)
       reset();
-
-    }
 
   }
 );
@@ -2207,6 +2088,5 @@ addEventListener(
 reset();
 
 </script>
-
 </body>
 </html>

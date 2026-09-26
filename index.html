@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dark Ecko — Elemental Valley v0.2</title>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  height:100%;
+  background:#05070b;
+  color:#eafcff;
+  font-family:Inter,system-ui,sans-serif;
+  overflow:hidden
+}
+
+#app{
+  height:100%;
+  display:grid;
+  grid-template-rows:auto 1fr auto
+}
+
+.bar{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:10px 14px;
+  background:#080c14;
+  border-bottom:1px solid #183849;
+  z-index:20;
+  flex-wrap:wrap
+}
+
+.brand{
+  font-weight:800;
+  letter-spacing:.12em;
+  color:#62e8ff
+}
+
+.bar label{
+  font-size:12px;
+  color:#9db5c3
+}
+
+.bar input,
+.bar select,
+.bar button{
+  background:#101925;
+  color:#eafcff;
+  border:1px solid #24475b;
+  border-radius:7px;
+  padding:7px 9px
+}
+
+.bar button{
+  cursor:pointer;
+  border-color:#2fb8d5
+}
+
+.bar button:hover{
+  background:#142839
+}
+
+.stat{
+  margin-left:auto;
+  font-variant-numeric:tabular-nums;
+  color:#8defff
+}
+
+#viewport{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  background:linear-gradient(#071321 0 55%,#0c1612 55%)
+}
+
+.layer{
+  position:absolute;
+  inset:0;
+  will-change:transform;
+  pointer-events:none
+}
+
+.sky{
+  background:
+    radial-gradient(circle at 72% 24%,#123e5c 0 3%,transparent 16%),
+    linear-gradient(#06101d,#0b2631 68%,#16312b)
+}
+
+.mountains{
+  height:48%;
+  top:19%;
+  background:
+    linear-gradient(
+      150deg,
+      transparent 0 12%,
+      #142e38 12% 20%,
+      transparent 20% 27%,
+      #183845 27% 39%,
+      transparent 39% 46%,
+      #102b35 46% 61%,
+      transparent 61%
+    );
+  opacity:.9
+}
+
+.farTrees{
+  top:37%;
+  height:28%;
+  background:
+    repeating-linear-gradient(
+      100deg,
+      transparent 0 48px,
+      #10352d 49px 63px,
+      transparent 64px 100px
+    );
+  filter:blur(.4px);
+  opacity:.8
+}
+
+.nearTrees{
+  top:27%;
+  height:42%;
+  background:
+    repeating-linear-gradient(
+      96deg,
+      transparent 0 120px,
+      #0c271f 121px 151px,
+      transparent 152px 225px
+    );
+  opacity:.95
+}
+
+.track{
+  top:63%;
+  height:27%;
+  background:
+    linear-gradient(
+      #23342f 0 4%,
+      #17201e 4% 92%,
+      #0c1110 92%
+    );
+  border-top:3px solid #46d8d8;
+  border-bottom:2px solid #162a29
+}
+
+.track:after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:52%;
+  height:2px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #7ad8d2 0 44px,
+      transparent 44px 82px
+    );
+  opacity:.35
+}
+
+.foreground{
+  top:86%;
+  height:20%;
+  background:
+    repeating-linear-gradient(
+      105deg,
+      transparent 0 75px,
+      #0a1c17 76px 98px,
+      transparent 99px 145px
+    );
+  z-index:12
+}
+
+.landmark{
+  position:absolute;
+  top:12%;
+  font-size:clamp(28px,4vw,64px);
+  font-weight:900;
+  letter-spacing:.08em;
+  color:#7ff5ff;
+  text-shadow:0 0 18px #26d9ff88;
+  white-space:nowrap;
+  z-index:3
+}
+
+.start{
+  left:7%
+}
+
+.hint{
+  position:absolute;
+  right:4%;
+  top:8%;
+  color:#7c9aa7;
+  font-size:12px;
+  z-index:15
+}
+
+#racers{
+  position:absolute;
+  inset:0;
+  z-index:10
+}
+
+.racer{
+  position:absolute;
+  width:28px;
+  height:28px;
+  border-radius:50% 50% 45% 45%;
+  background:
+    radial-gradient(
+      circle at 35% 30%,
+      #d7fbff 0 8%,
+      #58e8ff 9% 35%,
+      #18374d 36% 100%
+    );
+  box-shadow:
+    0 4px 12px #0008,
+    0 0 12px #39ddff66;
+  will-change:transform
+}
+
+.racer:after{
+  content:attr(data-n);
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  font-size:10px;
+  font-weight:900;
+  color:#031018
+}
+
+.racer.leader{
+  outline:2px solid #fff;
+  box-shadow:0 0 18px #fff9
+}
+
+#debug{
+  padding:7px 14px;
+  background:#080c14;
+  border-top:1px solid #183849;
+  color:#809ba8;
+  font:12px ui-monospace,monospace;
+  display:flex;
+  gap:20px;
+  white-space:nowrap
+}
+
+.pass{
+  color:#7fffb2
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+<div class="bar">
+  <div class="brand">DARK ECKO // ELEMENTAL VALLEY</div>
+
+  <label>
+    Racers
+    <input
+      id="count"
+      type="number"
+      min="1"
+      max="50"
+      value="12"
+      style="width:62px">
+  </label>
+
+  <label>
+    Duration
+    <select id="duration">
+      <option value="5">5s</option>
+      <option value="10" selected>10s</option>
+      <option value="30">30s</option>
+      <option value="60">60s</option>
+    </select>
+  </label>
+
+  <button id="start">Start</button>
+  <button id="reset">Reset</button>
+
+  <div class="stat" id="stat">READY</div>
+</div>
+
+<div id="viewport">
+
+  <div class="layer sky"></div>
+
+  <div
+    class="layer mountains"
+    data-depth=".12">
+  </div>
+
+  <div
+    class="layer farTrees"
+    data-depth=".28">
+  </div>
+
+  <div
+    class="layer nearTrees"
+    data-depth=".55">
+  </div>
+
+  <div
+    class="layer track"
+    data-depth="1">
+  </div>
+
+  <div class="landmark start">
+    FOREST GATE
+  </div>
+
+  <div id="racers"></div>
+
+  <div
+    class="layer foreground"
+    data-depth="1.28">
+  </div>
+
+  <div class="hint">
+    v0.2 camera + depth prototype
+  </div>
+
+</div>
+
+<div id="debug">
+  <span id="clock">t=0.000</span>
+  <span id="camera">camera=0</span>
+  <span id="fps">fps=—</span>
+  <span class="pass">
+    RNG result locked before animation
+  </span>
+</div>
+
+</div>
+
+<script>
+
+const $ = s => document.querySelector(s);
+
+const racersEl = $('#racers');
+const viewport = $('#viewport');
+
+const WORLD = 9000;
+
+let raf = 0;
+let state = null;
+
+
+/* --------------------------------
+   CRYPTOGRAPHIC RANDOM INTEGER
+-------------------------------- */
+
+function secureInt(max){
+
+  if(max <= 0 || max > 0x100000000)
+    throw Error('bad max');
+
+  const limit =
+    Math.floor(0x100000000 / max) * max;
+
+  const a = new Uint32Array(1);
+
+  do{
+    crypto.getRandomValues(a);
+  }
+  while(a[0] >= limit);
+
+  return a[0] % max;
+}
+
+
+/* --------------------------------
+   FISHER-YATES SHUFFLE
+-------------------------------- */
+
+function shuffle(n){
+
+  const a =
+    Array.from({length:n},(_,i)=>i);
+
+  for(let i=n-1;i>0;i--){
+
+    const j = secureInt(i+1);
+
+    [a[i],a[j]] =
+    [a[j],a[i]];
+
+  }
+
+  return a;
+}
+
+
+/* --------------------------------
+   RACER CREATION
+-------------------------------- */
+
+function makeRacers(n){
+
+  racersEl.innerHTML='';
+
+  for(let i=0;i<n;i++){
+
+    const e =
+      document.createElement('div');
+
+    e.className='racer';
+    e.dataset.n=i+1;
+
+    racersEl.appendChild(e);
+
+  }
+}
+
+
+/* --------------------------------
+   RESET
+-------------------------------- */
+
+function reset(){
+
+  cancelAnimationFrame(raf);
+
+  state=null;
+
+  makeRacers(+$('#count').value);
+
+  document
+    .querySelectorAll('.layer[data-depth]')
+    .forEach(x=>{
+      x.style.transform =
+        'translate3d(0,0,0)';
+    });
+
+  [...racersEl.children]
+    .forEach((r,i)=>{
+
+      r.style.transform =
+        `translate3d(
+          ${80+(i%5)*6}px,
+          ${viewport.clientHeight*.66+
+          (i%10)*Math.min(
+            14,
+            viewport.clientHeight*.19/10
+          )}px,
+          0
+        )`;
+
+    });
+
+  $('#stat').textContent='READY';
+  $('#clock').textContent='t=0.000';
+  $('#camera').textContent='camera=0';
+}
+
+
+/* --------------------------------
+   START RACE
+-------------------------------- */
+
+function start(){
+
+  cancelAnimationFrame(raf);
+
+  const n =
+    Math.max(
+      1,
+      Math.min(
+        50,
+        +$('#count').value || 1
+      )
+    );
+
+  const duration =
+    +$('#duration').value * 1000;
+
+  makeRacers(n);
+
+  /*
+     IMPORTANT:
+
+     The entire finishing order is
+     determined BEFORE animation.
+  */
+
+  const order = shuffle(n);
+
+  const rank = Array(n);
+
+  order.forEach(
+    (id,i)=>rank[id]=i
+  );
+
+  const seeds =
+    Array.from(
+      {length:n},
+      ()=>secureInt(100000)/100000
+    );
+
+  state={
+    n,
+    duration,
+    start:performance.now(),
+    rank,
+    seeds,
+    last:performance.now(),
+    frames:0
+  };
+
+  $('#stat').textContent='RACING';
+
+  raf=requestAnimationFrame(frame);
+}
+
+
+/* --------------------------------
+   ANIMATION
+-------------------------------- */
+
+function frame(now){
+
+  if(!state)
+    return;
+
+  const t =
+    Math.min(
+      1,
+      (now-state.start) /
+      state.duration
+    );
+
+  const ease =
+    t*t*(3-2*t);
+
+  const w =
+    viewport.clientWidth;
+
+  const h =
+    viewport.clientHeight;
+
+  const cameraX =
+    ease *
+    (WORLD-w*.72);
+
+
+  /* PARALLAX */
+
+  document
+    .querySelectorAll('.layer[data-depth]')
+    .forEach(el=>{
+
+      const d =
+        +el.dataset.depth;
+
+      el.style.transform =
+        `translate3d(
+          ${-cameraX*d}px,
+          0,
+          0
+        )`;
+
+    });
+
+
+  let lead=-1;
+  let leadX=-1;
+
+
+  /* RACERS */
+
+  [...racersEl.children]
+    .forEach((el,i)=>{
+
+      const r =
+        state.rank[i];
+
+      const s =
+        state.seeds[i];
+
+      const finishBias =
+        (state.n-r) /
+        state.n *
+        115;
+
+      /*
+         Visual drama only.
+
+         It fades near the finish
+         and cannot change the
+         predetermined result.
+      */
+
+      const drama =
+        (
+          Math.sin(t*18+s*20)*22 +
+          Math.sin(t*41+s*9)*9
+        )
+        *
+        (1-Math.pow(t,5));
+
+      const worldX =
+        110 +
+        ease*(WORLD-420) +
+        finishBias*t*t +
+        drama;
+
+      const x =
+        worldX-cameraX;
+
+      const rows =
+        Math.min(state.n,12);
+
+      const row =
+        i%rows;
+
+      const y =
+        h*.65 +
+        row *
+        Math.max(
+          8,
+          Math.min(
+            18,
+            h*.20/rows
+          )
+        );
+
+      const scale =
+        .78 +
+        (
+          row /
+          Math.max(1,rows-1)
+        )*.38;
+
+      el.style.transform =
+        `translate3d(
+          ${x}px,
+          ${y}px,
+          0
+        )
+        scale(${scale})`;
+
+      el.style.zIndex =
+        100+row;
+
+      if(worldX>leadX){
+
+        leadX=worldX;
+        lead=i;
+
+      }
+
+    });
+
+
+  [...racersEl.children]
+    .forEach(
+      (e,i)=>
+      e.classList.toggle(
+        'leader',
+        i===lead
+      )
+    );
+
+
+  /* FPS */
+
+  state.frames++;
+
+  if(now-state.last>500){
+
+    $('#fps').textContent =
+      `fps≈${
+        Math.round(
+          state.frames *
+          1000 /
+          (now-state.last)
+        )
+      }`;
+
+    state.frames=0;
+    state.last=now;
+
+  }
+
+
+  $('#clock').textContent =
+    `t=${t.toFixed(3)}`;
+
+  $('#camera').textContent =
+    `camera=${Math.round(cameraX)}`;
+
+
+  if(t<1){
+
+    $('#stat').textContent =
+      `${Math.ceil(
+        (1-t) *
+        state.duration /
+        1000
+      )}s`;
+
+    raf =
+      requestAnimationFrame(frame);
+
+  }
+  else{
+
+    $('#stat').textContent =
+      `WINNER: #${
+        state.rank.indexOf(0)+1
+      }`;
+
+  }
+
+}
+
+
+/* --------------------------------
+   CONTROLS
+-------------------------------- */
+
+$('#start').onclick=start;
+
+$('#reset').onclick=reset;
+
+$('#count').onchange=reset;
+
+addEventListener(
+  'resize',
+  reset
+);
+
+reset();
+
+</script>
+
+</body>
+</html>

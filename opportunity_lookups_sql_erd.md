@@ -1,39 +1,60 @@
-# Microsoft Dynamics CRM On-Premises: Opportunity Lookups SQL & ERD
+# Microsoft Dynamics CRM On-Premises: ETL Pipeline Direct Base Table Queries & ERD
 
-This document provides T-SQL queries and an Entity Relationship Diagram (ERD) to retrieve all lookup values from the `OpportunityBase` table in Microsoft Dynamics CRM (On-Premises SQL Database).
-
----
-
-## 1. Overview of Lookups in `OpportunityBase`
-
-In Dynamics CRM / D365 On-Premises, `OpportunityBase` contains primary foreign key columns (GUIDs) pointing to related entity tables. Some lookups are **polymorphic** (e.g., `CustomerId` can refer to either an `Account` or a `Contact`; `OwnerId` can refer to a `SystemUser` or a `Team`).
-
-### Summary of 16 Common Lookup Attributes:
-
-| # | Lookup Attribute Name | Direct Foreign Key Column | Target Entity / Table | Target Primary Key | Display Name Column |
-|---|----------------------|---------------------------|-----------------------|--------------------|---------------------|
-| 1 | **Customer** (Polymorphic) | `CustomerId` | `AccountBase` or `ContactBase` | `AccountId` / `ContactId` | `Name` (Account) / `FullName` (Contact) |
-| 2 | **Owner** (Polymorphic) | `OwnerId` | `SystemUserBase` or `TeamBase` | `SystemUserId` / `TeamId` | `FullName` (User) / `Name` (Team) |
-| 3 | **Created By** | `CreatedBy` | `SystemUserBase` | `SystemUserId` | `FullName` |
-| 4 | **Modified By** | `ModifiedBy` | `SystemUserBase` | `SystemUserId` | `FullName` |
-| 5 | **Created By (Delegate)** | `CreatedOnBehalfBy` | `SystemUserBase` | `SystemUserId` | `FullName` |
-| 6 | **Modified By (Delegate)** | `ModifiedOnBehalfBy` | `SystemUserBase` | `SystemUserId` | `FullName` |
-| 7 | **Owning Business Unit** | `OwningBusinessUnit` | `BusinessUnitBase` | `BusinessUnitId` | `Name` |
-| 8 | **Owning User** | `OwningUser` | `SystemUserBase` | `SystemUserId` | `FullName` |
-| 9 | **Owning Team** | `OwningTeam` | `TeamBase` | `TeamId` | `Name` |
-| 10 | **Currency** | `TransactionCurrencyId` | `TransactionCurrencyBase` | `TransactionCurrencyId` | `CurrencyName`, `ISOCurrencyCode` |
-| 11 | **Price List** | `PriceLevelId` | `PriceLevelBase` | `PriceLevelId` | `Name` |
-| 12 | **Source Campaign** | `CampaignId` | `CampaignBase` | `CampaignId` | `Name` |
-| 13 | **Territory** | `TerritoryId` | `TerritoryBase` | `TerritoryId` | `Name` |
-| 14 | **Originating Lead** | `OriginatingLeadId` | `LeadBase` | `LeadId` | `FullName`, `CompanyName` |
-| 15 | **SLA** | `SLAId` | `SLABase` | `SLAId` | `Name` |
-| 16 | **Parent Account / Contact** | `ParentAccountId` / `ParentContactId` | `AccountBase` / `ContactBase` | `AccountId` / `ContactId` | `Name` / `FullName` |
+When building an **ETL pipeline** (e.g., Azure Data Factory, SSIS, Informatica, Databricks, or custom Python/SQL pipelines) directly against Microsoft Dynamics CRM On-Premises SQL Server database, **you should NOT use Filtered Views** (`FilteredOpportunity`).
 
 ---
 
-## 2. Entity Relationship Diagram (ERD)
+## Why Filtered Views are NOT Used for ETL
 
-The following Mermaid diagram shows `OpportunityBase` at the center and its relationships with all lookup entities:
+1. **Performance Overhead:** Filtered Views execute complex underlying subqueries and security functions (`fn_UserSharedAttributeAccess`, security checks per row). In large databases, this causes severe query latency, CPU spikes, and ETL timeouts.
+2. **Context Requirement:** Filtered Views require an authenticated Windows / CRM user context. ETL service accounts (e.g. SQL service user / SQL authentication) running bulk queries directly will either return zero rows or fail.
+3. **Delta Extraction / CDC:** Filtered views obscure index usage on system columns like `ModifiedOn` or `VersionNumber`, making incremental ETL extractions significantly slower.
+
+---
+
+## ETL Architecture: Direct Base Table Queries
+
+For ETL workloads, you query the **Base Tables** directly using `WITH (NOLOCK)`.
+
+### Key Structural Rules for CRM On-Premises Base Tables:
+
+1. **`OpportunityBase` vs `OpportunityExtensionBase`:**
+   - Standard CRM attributes reside in `OpportunityBase`.
+   - Custom attributes (`new_...`, `custom_...`) reside in `OpportunityExtensionBase` (joined on `OpportunityId`).
+   - *(Note: In CRM 2016 / D365 v8.2+ with Merge Table capability enabled, all attributes may exist in `OpportunityBase`).*
+2. **Polymorphic Lookups (`CustomerId` & `OwnerId`):**
+   - `CustomerId` links to either `AccountBase` (`CustomerIdType = 1`) or `ContactBase` (`CustomerIdType = 2`).
+   - `OwnerId` links to either `SystemUserBase` (`OwnerIdType = 8`) or `TeamBase` (`OwnerIdType = 9`).
+3. **Picklist / OptionSet Translation via `StringMapBase`:**
+   - OptionSets (Status, State, Sales Stage, Lead Source, etc.) store integer codes in `OpportunityBase`.
+   - To get human-readable display labels in ETL, join `StringMapBase` on `ObjectTypeCode = 3000` (Opportunity) and `AttributeName`.
+
+---
+
+## 1. Summary of 16 Lookup Attributes & Target Base Tables
+
+| # | Lookup Attribute Name | Direct Foreign Key Column | Entity Type Code Column | Target Base Table(s) | Primary Key Column | Target Display Column |
+|---|----------------------|---------------------------|-------------------------|----------------------|--------------------|-----------------------|
+| 1 | **Customer** (Polymorphic) | `CustomerId` | `CustomerIdType` (`1`=Account, `2`=Contact) | `dbo.AccountBase`, `dbo.ContactBase` | `AccountId` / `ContactId` | `Name` / `FullName` |
+| 2 | **Owner** (Polymorphic) | `OwnerId` | `OwnerIdType` (`8`=User, `9`=Team) | `dbo.SystemUserBase`, `dbo.TeamBase` | `SystemUserId` / `TeamId` | `FullName` / `Name` |
+| 3 | **Created By** | `CreatedBy` | — | `dbo.SystemUserBase` | `SystemUserId` | `FullName` |
+| 4 | **Modified By** | `ModifiedBy` | — | `dbo.SystemUserBase` | `SystemUserId` | `FullName` |
+| 5 | **Created By (Delegate)** | `CreatedOnBehalfBy` | — | `dbo.SystemUserBase` | `SystemUserId` | `FullName` |
+| 6 | **Modified By (Delegate)** | `ModifiedOnBehalfBy` | — | `dbo.SystemUserBase` | `SystemUserId` | `FullName` |
+| 7 | **Owning Business Unit** | `OwningBusinessUnit` | — | `dbo.BusinessUnitBase` | `BusinessUnitId` | `Name` |
+| 8 | **Owning User** | `OwningUser` | — | `dbo.SystemUserBase` | `SystemUserId` | `FullName` |
+| 9 | **Owning Team** | `OwningTeam` | — | `dbo.TeamBase` | `TeamId` | `Name` |
+| 10 | **Transaction Currency** | `TransactionCurrencyId` | — | `dbo.TransactionCurrencyBase` | `TransactionCurrencyId` | `ISOCurrencyCode`, `CurrencyName` |
+| 11 | **Price List** | `PriceLevelId` | — | `dbo.PriceLevelBase` | `PriceLevelId` | `Name` |
+| 12 | **Source Campaign** | `CampaignId` | — | `dbo.CampaignBase` | `CampaignId` | `Name` |
+| 13 | **Territory** | `TerritoryId` | — | `dbo.TerritoryBase` | `TerritoryId` | `Name` |
+| 14 | **Originating Lead** | `OriginatingLeadId` | — | `dbo.LeadBase` | `LeadId` | `FullName`, `CompanyName` |
+| 15 | **SLA** | `SLAId` | — | `dbo.SLABase` | `SLAId` | `Name` |
+| 16 | **Parent Account / Contact** | `ParentAccountId` / `ParentContactId` | — | `dbo.AccountBase`, `dbo.ContactBase` | `AccountId` / `ContactId` | `Name` / `FullName` |
+
+---
+
+## 2. Entity Relationship Diagram (ERD) for Base Tables
 
 ```mermaid
 erDiagram
@@ -59,6 +80,14 @@ erDiagram
         uniqueidentifier SLAId FK
         uniqueidentifier ParentAccountId FK
         uniqueidentifier ParentContactId FK
+        int StateCode
+        int StatusCode
+        datetime ModifiedOn
+        bigint VersionNumber
+    }
+
+    OpportunityExtensionBase {
+        uniqueidentifier OpportunityId PK_FK
     }
 
     AccountBase {
@@ -69,8 +98,6 @@ erDiagram
     ContactBase {
         uniqueidentifier ContactId PK
         string FullName
-        string FirstName
-        string LastName
     }
 
     SystemUserBase {
@@ -93,7 +120,6 @@ erDiagram
         uniqueidentifier TransactionCurrencyId PK
         string CurrencyName
         string ISOCurrencyCode
-        string CurrencySymbol
     }
 
     PriceLevelBase {
@@ -122,6 +148,15 @@ erDiagram
         string Name
     }
 
+    StringMapBase {
+        int ObjectTypeCode
+        string AttributeName
+        int AttributeValue
+        string Value
+        int LangId
+    }
+
+    OpportunityBase ||--o| OpportunityExtensionBase : "1:1 Extension"
     OpportunityBase }|--o| AccountBase : "CustomerId (type=1) / ParentAccountId"
     OpportunityBase }|--o| ContactBase : "CustomerId (type=2) / ParentContactId"
     OpportunityBase }|--o| SystemUserBase : "OwnerId (type=8) / CreatedBy / ModifiedBy / CreatedOnBehalfBy / ModifiedOnBehalfBy / OwningUser"
@@ -133,25 +168,37 @@ erDiagram
     OpportunityBase }|--o| TerritoryBase : "TerritoryId"
     OpportunityBase }|--o| LeadBase : "OriginatingLeadId"
     OpportunityBase }|--o| SLABase : "SLAId"
+    OpportunityBase }|--o| StringMapBase : "StateCode / StatusCode OptionSets (ObjectTypeCode=3000)"
 ```
 
 ---
 
-## 3. T-SQL Queries
+## 3. Production T-SQL ETL Extraction Query
 
-### Approach A: Direct SQL Query on Base Tables
-
-Use this query when querying the database directly with administrative SQL access. It joins `OpportunityBase` (and `OpportunityExtensionBase` if present) to all lookup tables.
+Use this query in your ETL pipeline (SSIS, Azure Data Factory, Python/pandas SQL alchemy, Spark SQL, etc.) to extract full opportunity records and resolved lookup values directly from the base database:
 
 ```sql
 SELECT
-    -- Opportunity Core Fields
+    -- Opportunity Primary Identifiers
     o.OpportunityId,
     o.Name AS OpportunityName,
+    o.Description,
     o.EstimatedValue,
     o.EstimatedCloseDate,
-    o.StatusCode,
+    o.ActualValue,
+    o.ActualCloseDate,
+    o.CloseProbability,
+
+    -- System Fields for Incremental / Delta ETL Extraction
+    o.CreatedOn,
+    o.ModifiedOn,
+    o.VersionNumber,
+
+    -- OptionSet / Picklist Translations (via StringMapBase joins)
     o.StateCode,
+    sm_state.Value AS StateLabel,
+    o.StatusCode,
+    sm_status.Value AS StatusLabel,
 
     -- 1. Customer Lookup (Polymorphic: Account or Contact)
     o.CustomerId,
@@ -162,8 +209,10 @@ SELECT
         ELSE NULL
     END AS CustomerType,
     COALESCE(cust_acc.Name, cust_con.FullName) AS CustomerName,
+    cust_acc.AccountNumber AS CustomerAccountNumber,
+    cust_con.EMailAddress1 AS CustomerContactEmail,
 
-    -- 2. Owner Lookup (Polymorphic: User or Team)
+    -- 2. Owner Lookup (Polymorphic: SystemUser or Team)
     o.OwnerId,
     o.OwnerIdType,
     CASE
@@ -172,6 +221,7 @@ SELECT
         ELSE NULL
     END AS OwnerType,
     COALESCE(owner_usr.FullName, owner_team.Name) AS OwnerName,
+    owner_usr.DomainName AS OwnerDomainName,
 
     -- 3. Created By
     o.CreatedBy,
@@ -203,9 +253,10 @@ SELECT
 
     -- 10. Transaction Currency
     o.TransactionCurrencyId,
+    curr.ISOCurrencyCode AS CurrencyCode,
     curr.CurrencyName,
-    curr.ISOCurrencyCode,
     curr.CurrencySymbol,
+    o.ExchangeRate,
 
     -- 11. Price List
     o.PriceLevelId,
@@ -214,6 +265,7 @@ SELECT
     -- 12. Source Campaign
     o.CampaignId,
     camp.Name AS CampaignName,
+    camp.CodeName AS CampaignCode,
 
     -- 13. Territory
     o.TerritoryId,
@@ -236,8 +288,9 @@ SELECT
 
 FROM dbo.OpportunityBase o WITH (NOLOCK)
 
--- Optional: Join Extension Base if custom attributes exist in your CRM version
--- LEFT JOIN dbo.OpportunityExtensionBase ext WITH (NOLOCK) ON o.OpportunityId = ext.OpportunityId
+-- Extension Base table for custom fields (if present in your environment)
+LEFT JOIN dbo.OpportunityExtensionBase ext WITH (NOLOCK)
+    ON o.OpportunityId = ext.OpportunityId
 
 -- 1. Customer Joins
 LEFT JOIN dbo.AccountBase cust_acc WITH (NOLOCK)
@@ -307,92 +360,56 @@ LEFT JOIN dbo.SLABase sla WITH (NOLOCK)
 LEFT JOIN dbo.AccountBase parent_acc WITH (NOLOCK)
     ON o.ParentAccountId = parent_acc.AccountId
 LEFT JOIN dbo.ContactBase parent_con WITH (NOLOCK)
-    ON o.ParentContactId = parent_con.ContactId;
+    ON o.ParentContactId = parent_con.ContactId
+
+-- StringMap Joins for OptionSet Translation (ObjectTypeCode 3000 = Opportunity, LangId 1033 = English)
+LEFT JOIN dbo.StringMapBase sm_state WITH (NOLOCK)
+    ON sm_state.ObjectTypeCode = 3000
+   AND sm_state.AttributeName = 'statecode'
+   AND sm_state.AttributeValue = o.StateCode
+   AND sm_state.LangId = 1033
+
+LEFT JOIN dbo.StringMapBase sm_status WITH (NOLOCK)
+    ON sm_status.ObjectTypeCode = 3000
+   AND sm_status.AttributeName = 'statuscode'
+   AND sm_status.AttributeValue = o.StatusCode
+   AND sm_status.LangId = 1033;
 ```
 
 ---
 
-### Approach B: Using CRM Filtered Views (`FilteredOpportunity`)
+## 4. Incremental / Delta ETL Query Strategy
 
-> **Best Practice for Reporting / SSRS:** Microsoft Dynamics CRM provides **Filtered Views** (e.g. `FilteredOpportunity`) that automatically enforce security roles and pre-join lookup display names (`...Name` suffix columns).
+For high-volume ETL pipelines, extract incremental changes using `ModifiedOn` or `VersionNumber` watermark tracking:
 
 ```sql
+-- Delta ETL Query Example (e.g., extracting records updated since last execution)
 SELECT
-    fo.opportunityid,
-    fo.name AS OpportunityName,
-    fo.estimatedvalue,
-    fo.estimatedclosedate,
-    fo.statuscodename AS StatusName,
-    fo.statecodename AS StateName,
-
-    -- Pre-joined Lookup Display Names in FilteredOpportunity:
-    fo.customerid,
-    fo.customeridname AS CustomerName,
-    fo.customeridtype,
-    fo.customeridtypename AS CustomerTypeName,
-
-    fo.ownerid,
-    fo.owneridname AS OwnerName,
-    fo.owneridtype,
-    fo.owneridtypename AS OwnerTypeName,
-
-    fo.createdby,
-    fo.createdbyname AS CreatedByName,
-
-    fo.modifiedby,
-    fo.modifiedbyname AS ModifiedByName,
-
-    fo.createdonbehalfby,
-    fo.createdonbehalfbyname AS CreatedOnBehalfByName,
-
-    fo.modifiedonbehalfby,
-    fo.modifiedonbehalfbyname AS ModifiedOnBehalfByName,
-
-    fo.owningbusinessunit,
-    fo.owningbusinessunitname AS OwningBusinessUnitName,
-
-    fo.owninguser,
-    fo.owningusername AS OwningUserName,
-
-    fo.owningteam,
-    fo.owningteamname AS OwningTeamName,
-
-    fo.transactioncurrencyid,
-    fo.transactioncurrencyidname AS CurrencyName,
-
-    fo.pricelevelid,
-    fo.pricelevelidname AS PriceListName,
-
-    fo.campaignid,
-    fo.campaignidname AS CampaignName,
-
-    fo.territoryid,
-    fo.territoryidname AS TerritoryName,
-
-    fo.originatingleadid,
-    fo.originatingleadidname AS OriginatingLeadName,
-
-    fo.slaid,
-    fo.slaidname AS SLAName,
-
-    fo.parentaccountid,
-    fo.parentaccountidname AS ParentAccountName,
-
-    fo.parentcontactid,
-    fo.parentcontactidname AS ParentContactName
-
-FROM dbo.FilteredOpportunity fo;
+    o.OpportunityId,
+    o.Name,
+    o.ModifiedOn,
+    o.VersionNumber,
+    -- (Include required lookups from main query above)
+    COALESCE(cust_acc.Name, cust_con.FullName) AS CustomerName,
+    COALESCE(owner_usr.FullName, owner_team.Name) AS OwnerName
+FROM dbo.OpportunityBase o WITH (NOLOCK)
+LEFT JOIN dbo.AccountBase cust_acc WITH (NOLOCK)
+    ON o.CustomerId = cust_acc.AccountId AND o.CustomerIdType = 1
+LEFT JOIN dbo.ContactBase cust_con WITH (NOLOCK)
+    ON o.CustomerId = cust_con.ContactId AND o.CustomerIdType = 2
+LEFT JOIN dbo.SystemUserBase owner_usr WITH (NOLOCK)
+    ON o.OwnerId = owner_usr.SystemUserId AND o.OwnerIdType = 8
+LEFT JOIN dbo.TeamBase owner_team WITH (NOLOCK)
+    ON o.OwnerId = owner_team.TeamId AND o.OwnerIdType = 9
+WHERE o.ModifiedOn >= @LastETLWatermarkDateTime
+   OR o.VersionNumber > @LastETLWatermarkVersionNumber;
 ```
 
 ---
 
-## 4. Key Takeaways & Best Practices
+## 5. Summary Checklist for CRM Base Table ETLs
 
-1. **Polymorphic Lookups (`CustomerId`, `OwnerId`):**
-   - Check `CustomerIdType` (`1` = Account, `2` = Contact) to determine which table contains the record.
-   - Check `OwnerIdType` (`8` = SystemUser, `9` = Team) to determine ownership type.
-2. **Filtered Views vs Base Tables:**
-   - **Filtered Views (`FilteredOpportunity`)** are recommended for SSRS and external reports because they enforce CRM security roles and automatically include display names (`...name` suffix).
-   - **Base Tables (`OpportunityBase`)** are useful for backend ETL, data migration, or administrative queries where full database access is available.
-3. **`WITH (NOLOCK)`:**
-   - Always include `WITH (NOLOCK)` when querying base tables directly on production CRM databases to avoid locking issues during active business hours.
+1. **Always use `WITH (NOLOCK)`** on all base table queries to prevent database blocking in production.
+2. **Handle Polymorphism explicitly** (`CustomerIdType` and `OwnerIdType` joins).
+3. **Join `StringMapBase`** for OptionSet / Picklist labels using `ObjectTypeCode = 3000` (Opportunity) and your organization's `LangId` (e.g. `1033` for English).
+4. **Use `VersionNumber` or `ModifiedOn`** for incremental watermark delta extractions.
